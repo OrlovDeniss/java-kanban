@@ -95,7 +95,7 @@ public class TaskManager {
 
     @Override
     public String toString() {
-        return "ru.yandex.practicum.kanban.manager.Manager{" +
+        return "TaskManager{" +
                 "taskMap=" + tasks +
                 ", subTaskMap=" + subTasks +
                 ", epicTaskMap=" + epicTasks +
