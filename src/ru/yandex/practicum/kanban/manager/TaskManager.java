@@ -1,8 +1,15 @@
+package ru.yandex.practicum.kanban.manager;
+
+import ru.yandex.practicum.kanban.task.Epic;
+import ru.yandex.practicum.kanban.task.SubTask;
+import ru.yandex.practicum.kanban.task.Task;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class Manager {
-    public static int freeIdNumber = 0;
+public class TaskManager {
     private Map<Integer, Task> tasks = new HashMap<>();
     private Map<Integer, SubTask> subTasks = new HashMap<>();
     private Map<Integer, Epic> epicTasks = new HashMap<>();
@@ -23,14 +30,14 @@ public class Manager {
     }
 
     public void remove(int id) {
-        try {
+        if (tasks.containsKey(id)) {
+            tasks.remove(id);
+        } else if (subTasks.containsKey(id)) {
             subTasks.get(id).getSuperEpic().remove(id);
-        } catch (NullPointerException e) {
-
+            subTasks.remove(id);
+        } else if (epicTasks.containsKey(id)) {
+            epicTasks.remove(id);
         }
-        tasks.remove(id);
-        subTasks.remove(id);
-        epicTasks.remove(id);
     }
 
     public Task getTask(int id) {
@@ -45,7 +52,7 @@ public class Manager {
         return epicTasks.get(id);
     }
 
-    public SubTask[] getEpicSubTasks(Epic epic) {
+    public List<SubTask> getEpicSubTasks(Epic epic) {
         return epic.getAllSubTasks();
     }
 
@@ -61,34 +68,34 @@ public class Manager {
         epicTasks.put(epic.getId(), epic);
     }
 
-    public void upd(Task task) {
+    public void update(Task task) {
         tasks.put(task.getId(), task);
     }
 
-    public void upd(SubTask subTask) {
+    public void update(SubTask subTask) {
         subTasks.put(subTask.getId(), subTask);
         subTask.getSuperEpic().addSubTask(subTask);
     }
 
-    public void upd(Epic epic) {
+    public void update(Epic epic) {
         epicTasks.put(epic.getId(), epic);
     }
 
-    public Task[] getAllTasks() {
-        return tasks.values().toArray(new Task[0]);
+    public List<Task> getAllTasks() {
+        return new ArrayList<>(tasks.values());
     }
 
-    public SubTask[] getAllSubTasks() {
-        return subTasks.values().toArray(new SubTask[0]);
+    public List<SubTask> getAllSubTasks() {
+        return new ArrayList<>(subTasks.values());
     }
 
-    public Epic[] getAllEpicTasks() {
-        return epicTasks.values().toArray(new Epic[0]);
+    public List<Epic> getAllEpicTasks() {
+        return new ArrayList<>(epicTasks.values());
     }
 
     @Override
     public String toString() {
-        return "Manager{" +
+        return "ru.yandex.practicum.kanban.manager.Manager{" +
                 "taskMap=" + tasks +
                 ", subTaskMap=" + subTasks +
                 ", epicTaskMap=" + epicTasks +

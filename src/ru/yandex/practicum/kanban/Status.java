@@ -1,3 +1,5 @@
+package ru.yandex.practicum.kanban;
+
 public enum Status {
     NEW("NEW"),
     IN_PROGRESS("IN_PROGRESS"),

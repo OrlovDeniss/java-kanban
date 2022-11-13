@@ -1,3 +1,8 @@
+package ru.yandex.practicum.kanban.task;
+
+import ru.yandex.practicum.kanban.manager.IdManager;
+import ru.yandex.practicum.kanban.Status;
+
 import java.util.Objects;
 
 public class Task {
@@ -7,8 +12,8 @@ public class Task {
     private String description;
     private Status status;
 
-    Task() {
-        this.id = Manager.freeIdNumber++;
+    public Task() {
+        this.id = IdManager.getId();
     }
 
     public String getTitle() {
