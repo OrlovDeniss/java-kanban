@@ -1,13 +1,11 @@
-import ru.yandex.practicum.kanban.Status;
-import ru.yandex.practicum.kanban.manager.TaskManager;
+import ru.yandex.practicum.kanban.manager.Managers;
+import ru.yandex.practicum.kanban.manager.taskmanager.TaskManager;
 import ru.yandex.practicum.kanban.task.Epic;
 import ru.yandex.practicum.kanban.task.SubTask;
 
-//Привет, Дмитрий! Прошу проверить мою работу строго.
 public class Main {
-
     public static void main(String[] args) {
-        TaskManager taskManager = new TaskManager();
+        TaskManager taskManager = Managers.getDefault();
 
         Epic epic1 = new Epic();
         SubTask subTask1epic1 = new SubTask(epic1);
@@ -22,31 +20,31 @@ public class Main {
         taskManager.add(epic2);
         taskManager.add(subTask1epic2);
 
-        System.out.println(taskManager.getAllEpicTasks());
-        System.out.println(taskManager.getAllTasks());
-        System.out.println(taskManager.getAllSubTasks());
+        taskManager.getEpic(3);
+        taskManager.getEpic(0);
+
+        System.out.println("History data: " + taskManager.getHistory());
+        System.out.println("History size: " + taskManager.getHistory().size());
         System.out.println();
 
-        subTask1epic1.setStatus(Status.NEW);
-        subTask2epic1.setStatus(Status.DONE);
-        subTask1epic2.setStatus(Status.DONE);
+        taskManager.getEpic(0);
+        taskManager.getSubTask(4);
+        taskManager.getEpic(3);
+        taskManager.getEpic(0);
+        taskManager.getSubTask(2);
+        taskManager.getEpic(0);
+        taskManager.getEpic(3);
+        taskManager.getSubTask(1);
+        taskManager.getEpic(0);
+        taskManager.getEpic(3);
+        taskManager.getEpic(3);
+        taskManager.getSubTask(2);
+        taskManager.getEpic(0);
+        taskManager.getEpic(3);
+        taskManager.getSubTask(1);
+        taskManager.getEpic(0);
 
-        taskManager.update(subTask1epic1);
-        taskManager.update(subTask2epic1);
-        taskManager.update(subTask1epic2);
-
-        System.out.println(taskManager.getAllEpicTasks());
-        System.out.println(taskManager.getAllTasks());
-        System.out.println(taskManager.getAllSubTasks());
-        System.out.println();
-
-        taskManager.remove(1);
-        taskManager.remove(3);
-
-        System.out.println(taskManager.getAllEpicTasks());
-        System.out.println(taskManager.getAllTasks());
-        System.out.println(taskManager.getAllSubTasks());
-        System.out.println();
-
+        System.out.println("History data: " + taskManager.getHistory());
+        System.out.println("History size: " + taskManager.getHistory().size());
     }
 }

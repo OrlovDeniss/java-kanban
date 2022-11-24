@@ -1,6 +1,6 @@
 package ru.yandex.practicum.kanban.task;
 
-import ru.yandex.practicum.kanban.manager.IdManager;
+import ru.yandex.practicum.kanban.manager.id.IdManager;
 import ru.yandex.practicum.kanban.Status;
 
 import java.util.Objects;
