@@ -42,25 +42,29 @@ public class InMemoryTaskManager implements TaskManager {
             subTasks.get(id).getSuperEpic().remove(id);
             subTasks.remove(id);
         } else if (epicTasks.containsKey(id)) {
+            for (SubTask inEpicSubTask : epicTasks.get(id).getAllSubTasks()) {
+                remove(inEpicSubTask.getId());
+            }
             epicTasks.remove(id);
         }
+        historyManager.remove(id);
     }
 
     @Override
     public Task getTask(int id) {
-        historyManager.addTask(tasks.get(id));
+        historyManager.add(tasks.get(id));
         return tasks.get(id);
     }
 
     @Override
     public SubTask getSubTask(int id) {
-        historyManager.addTask(subTasks.get(id));
+        historyManager.add(subTasks.get(id));
         return subTasks.get(id);
     }
 
     @Override
     public Epic getEpic(int id) {
-        historyManager.addTask(epicTasks.get(id));
+        historyManager.add(epicTasks.get(id));
         return epicTasks.get(id);
     }
 
