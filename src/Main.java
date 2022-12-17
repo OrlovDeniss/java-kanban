@@ -6,6 +6,7 @@ import ru.yandex.practicum.kanban.task.Task;
 
 public class Main {
     public static void main(String[] args) {
+
         TaskManager taskManager = Managers.getDefault();
 
         Epic epic1 = new Epic();
@@ -38,6 +39,7 @@ public class Main {
 
         taskManager.remove(0);
         printHistory(taskManager);
+
     }
 
     private static void printHistory(TaskManager taskManager) {

@@ -7,6 +7,7 @@ import ru.yandex.practicum.kanban.task.Task;
 import java.util.List;
 
 public interface TaskManager {
+
     void clearTasks();
 
     void clearSubTasks();

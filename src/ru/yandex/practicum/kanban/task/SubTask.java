@@ -3,6 +3,7 @@ package ru.yandex.practicum.kanban.task;
 import java.util.Objects;
 
 public class SubTask extends Task {
+
     private Epic superEpic;
 
     public SubTask(Epic superEpic) {
