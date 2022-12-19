@@ -34,10 +34,10 @@ public class Main {
         taskManager.getSubTask(1);
         printHistory(taskManager);
 
-        taskManager.remove(2);
+        taskManager.removeSubTask(2);
         printHistory(taskManager);
 
-        taskManager.remove(0);
+        taskManager.removeEpic(0);
         printHistory(taskManager);
 
     }

@@ -14,7 +14,11 @@ public interface TaskManager {
 
     void clearEpicTasks();
 
-    void remove(int id);
+    void removeTask(int id);
+
+    void removeSubTask(int id);
+
+    void removeEpic(int id);
 
     Task getTask(int id);
 
