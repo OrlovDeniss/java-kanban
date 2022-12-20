@@ -9,35 +9,55 @@ public class Main {
 
         TaskManager taskManager = Managers.getDefault();
 
+        Task task1 = new Task();
+        Task task2 = new Task();
+
         Epic epic1 = new Epic();
         SubTask subTask1 = new SubTask(epic1);
         SubTask subTask2 = new SubTask(epic1);
         SubTask subTask3 = new SubTask(epic1);
+
         Epic epic2 = new Epic();
 
+        taskManager.add(task1);
+        taskManager.add(task2);
         taskManager.add(epic1);
         taskManager.add(subTask1);
         taskManager.add(subTask2);
         taskManager.add(subTask3);
         taskManager.add(epic2);
 
-        taskManager.getEpic(0);
+        taskManager.getTask(0);
         printHistory(taskManager);
 
-        taskManager.getEpic(4);
+        taskManager.getEpic(2);
+        printHistory(taskManager);
+
         taskManager.getSubTask(3);
         printHistory(taskManager);
 
-        taskManager.getSubTask(2);
-        taskManager.getEpic(4);
+        taskManager.getTask(1);
+        printHistory(taskManager);
+
+        taskManager.getSubTask(4);
+        printHistory(taskManager);
+
+        taskManager.getEpic(6);
+        printHistory(taskManager);
+
         taskManager.getSubTask(3);
-        taskManager.getSubTask(1);
         printHistory(taskManager);
 
-        taskManager.removeSubTask(2);
+        taskManager.getSubTask(5);
         printHistory(taskManager);
 
-        taskManager.removeEpic(0);
+        taskManager.getSubTask(3);
+        printHistory(taskManager);
+
+        taskManager.removeTask(0);
+        printHistory(taskManager);
+
+        taskManager.removeEpic(2);
         printHistory(taskManager);
 
     }

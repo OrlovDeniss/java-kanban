@@ -27,15 +27,13 @@ public class CustomLinkedList {
         Node nextNode = node.getNext();
         if (prevNode != null) {
             prevNode.setNext(nextNode);
+        } else {
+            head = nextNode;
         }
         if (nextNode != null) {
             nextNode.setPrev(prevNode);
-        }
-        if (tail.equals(node)) {
+        } else {
             tail = prevNode;
-        }
-        if (head.equals(node)) {
-            head = nextNode;
         }
     }
 
