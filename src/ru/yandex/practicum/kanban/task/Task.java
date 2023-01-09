@@ -1,7 +1,7 @@
 package ru.yandex.practicum.kanban.task;
 
-import ru.yandex.practicum.kanban.manager.id.IdManager;
 import ru.yandex.practicum.kanban.Status;
+import ru.yandex.practicum.kanban.manager.id.IdManager;
 
 import java.util.Objects;
 
@@ -10,7 +10,7 @@ public class Task {
     private int id;
     private String title;
     private String description;
-    private Status status;
+    private Status status = Status.NEW;
 
     public Task() {
         this.id = IdManager.getId();
@@ -30,6 +30,10 @@ public class Task {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getId() {

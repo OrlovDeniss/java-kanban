@@ -8,4 +8,8 @@ public class IdManager {
         return freeIdNumber++;
     }
 
+    public static void setStartId(int id) {
+        freeIdNumber = id;
+    }
+
 }
