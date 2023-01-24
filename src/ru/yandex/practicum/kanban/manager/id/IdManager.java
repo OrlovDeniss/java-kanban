@@ -2,13 +2,13 @@ package ru.yandex.practicum.kanban.manager.id;
 
 public class IdManager {
 
-    private static int freeIdNumber = 0;
+    private static Long freeIdNumber = 0L;
 
-    public static int getId() {
+    public static Long getId() {
         return freeIdNumber++;
     }
 
-    public static void setStartId(int id) {
+    public static void setStartId(Long id) {
         freeIdNumber = id;
     }
 

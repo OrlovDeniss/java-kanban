@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    private Map<Integer, Node> history = new HashMap<>();
+    private Map<Long, Node> history = new HashMap<>();
     private CustomLinkedList customLinkedList = new CustomLinkedList();
 
     @Override
@@ -20,7 +20,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public void remove(int id) {
+    public void remove(Long id) {
         if (history.containsKey(id)) {
             customLinkedList.removeNode(history.get(id));
             history.remove(id);

@@ -1,10 +1,4 @@
-id,type,name,status,description,epic
-0,TASK,null,NEW,null,
-1,TASK,null,NEW,null,
-2,EPIC,null,NEW,null,
-6,EPIC,null,NEW,null,
-3,SUBTASK,null,NEW,null,2
-4,SUBTASK,null,NEW,null,2
-5,SUBTASK,null,NEW,null,2
+id,type,name,status,description,epic,duration,startTime
+8,EPIC,Test tittle,NEW,Test description,,PT15M,2023-01-02T13:15,
 
-3,0,2,5,4,1,6
+8

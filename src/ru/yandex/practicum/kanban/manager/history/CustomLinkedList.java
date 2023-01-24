@@ -11,25 +11,32 @@ public class CustomLinkedList {
     private Node tail;
 
     public Node linkLast(Task task) {
+
         Node oldLast = tail;
         Node newNode = new Node(oldLast, task, null);
+
         tail = newNode;
+
         if (oldLast == null) {
             head = newNode;
         } else {
             oldLast.setNext(newNode);
         }
+
         return newNode;
     }
 
     public void removeNode(Node node) {
+
         Node prevNode = node.getPrev();
         Node nextNode = node.getNext();
+
         if (prevNode != null) {
             prevNode.setNext(nextNode);
         } else {
             head = nextNode;
         }
+
         if (nextNode != null) {
             nextNode.setPrev(prevNode);
         } else {
@@ -38,12 +45,15 @@ public class CustomLinkedList {
     }
 
     public List<Task> getTasks() {
+
         List<Task> tasks = new ArrayList<>();
         Node nodeCursor = head;
+
         while (nodeCursor != null) {
             tasks.add(nodeCursor.getTask());
             nodeCursor = nodeCursor.getNext();
         }
+
         return tasks;
     }
 }

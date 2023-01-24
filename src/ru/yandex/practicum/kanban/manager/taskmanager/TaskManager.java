@@ -14,17 +14,17 @@ public interface TaskManager {
 
     void clearEpicTasks();
 
-    void removeTask(int id);
+    void removeTask(Long id);
 
-    void removeSubTask(int id);
+    void removeSubTask(Long id);
 
-    void removeEpic(int id);
+    void removeEpic(Long id);
 
-    Task getTask(int id);
+    Task getTask(Long id);
 
-    SubTask getSubTask(int id);
+    SubTask getSubTask(Long id);
 
-    Epic getEpic(int id);
+    Epic getEpic(Long id);
 
     List<SubTask> getEpicSubTasks(Epic epic);
 
@@ -47,4 +47,6 @@ public interface TaskManager {
     List<Epic> getAllEpicTasks();
 
     List<Task> getHistory();
+
+    List<Task> getPrioritizedTasks();
 }
