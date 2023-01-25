@@ -1,8 +1,11 @@
 package ru.yandex.practicum.kanban.test;
 
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.kanban.Status;
 import ru.yandex.practicum.kanban.manager.taskmanager.FileBackedTasksManager;
 import ru.yandex.practicum.kanban.task.Epic;
+import ru.yandex.practicum.kanban.task.SubTask;
+import ru.yandex.practicum.kanban.task.Task;
 
 import java.io.File;
 import java.time.Duration;
@@ -49,7 +52,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
         testEpic.setTitle("Test tittle");
         testEpic.setDescription("Test description");
         testEpic.setDuration(Duration.ofMinutes(30));
-        testEpic.setStartTime(LocalDateTime.of(2023,1,1,0,0));
+        testEpic.setStartTime(LocalDateTime.of(2023, 1, 1, 0, 0));
 
         fileBackedTasksManager.add(testEpic);
 
@@ -70,10 +73,6 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
     public void saveAndLoadEpicWithHistory() {
 
         var testEpic = new Epic();
-        testEpic.setTitle("Test tittle");
-        testEpic.setDescription("Test description");
-        testEpic.setDuration(Duration.ofMinutes(15));
-        testEpic.setStartTime(LocalDateTime.of(2023, 1,2,13,15));
 
         fileBackedTasksManager.add(testEpic);
         fileBackedTasksManager.getEpic(testEpic.getId());
@@ -95,4 +94,51 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
 
     }
 
+    @Test
+    public void saveAndLoadTasks() {
+
+        var task = new Task();
+        var task2 = new Task();
+
+        fileBackedTasksManager.add(task);
+        fileBackedTasksManager.add(task2);
+
+        var managerFromFile = fileBackedTasksManager.loadFromFile(file);
+
+        assertEquals(task, managerFromFile.getTask(task.getId()));
+        assertEquals(task2, managerFromFile.getTask(task2.getId()));
+
+    }
+
+    @Test
+    public void saveAndLoadEpicWithSubTasks() {
+
+        var testEpic = new Epic();
+        var subTask1 = new SubTask(testEpic);
+        var subTask2 = new SubTask(testEpic);
+
+        subTask1.setStartTime(LocalDateTime.of(2023, 1, 1, 13, 0));
+        subTask2.setStartTime(LocalDateTime.of(2023, 1, 2, 13, 0));
+
+        subTask1.setDuration(Duration.ofMinutes(60));
+        subTask2.setDuration(Duration.ofMinutes(60));
+
+        subTask1.setStatus(Status.NEW);
+        subTask2.setStatus(Status.DONE);
+
+        fileBackedTasksManager.add(testEpic);
+        fileBackedTasksManager.add(subTask1);
+        fileBackedTasksManager.add(subTask2);
+
+        var managerFromFile = fileBackedTasksManager.loadFromFile(file);
+
+        assertEquals(testEpic, managerFromFile.getEpic(testEpic.getId()));
+        assertEquals(subTask1, managerFromFile.getSubTask(subTask1.getId()));
+        assertEquals(subTask2, managerFromFile.getSubTask(subTask2.getId()));
+
+        assertEquals(Status.IN_PROGRESS, managerFromFile.getEpic(testEpic.getId()).getStatus());
+        assertEquals(Duration.ofMinutes(120), managerFromFile.getEpic(testEpic.getId()).getDuration().get());
+        assertEquals(1, managerFromFile.getEpic(testEpic.getId()).getStartTime().get().getDayOfMonth());
+
+    }
 }

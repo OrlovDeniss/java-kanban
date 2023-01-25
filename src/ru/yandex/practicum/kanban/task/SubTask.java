@@ -1,6 +1,9 @@
 package ru.yandex.practicum.kanban.task;
 
-import java.util.Objects;
+import ru.yandex.practicum.kanban.Status;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class SubTask extends Task {
 
@@ -11,8 +14,38 @@ public class SubTask extends Task {
         superEpic.addSubTask(this);
     }
 
+    public SubTask(Long id, Epic superEpic) {
+        this.superEpic = superEpic;
+        setId(id);
+        superEpic.addSubTask(this);
+    }
+
     public Epic getSuperEpic() {
         return superEpic;
+    }
+
+    @Override
+    public void setId(Long id) {
+        super.setId(id);
+        superEpic.addSubTask(this);
+    }
+
+    @Override
+    public void setStatus(Status status) {
+        super.setStatus(status);
+        superEpic.addSubTask(this);
+    }
+
+    @Override
+    public void setDuration(Duration duration) {
+        super.setDuration(duration);
+        superEpic.addSubTask(this);
+    }
+
+    @Override
+    public void setStartTime(LocalDateTime startTime) {
+        super.setStartTime(startTime);
+        superEpic.addSubTask(this);
     }
 
     @Override
@@ -20,17 +53,4 @@ public class SubTask extends Task {
         return "Sub" + super.toString();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        SubTask subTask = (SubTask) o;
-        return Objects.equals(superEpic, subTask.superEpic);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), superEpic);
-    }
 }

@@ -19,9 +19,10 @@ public class InMemoryTaskManager implements TaskManager {
     private Map<Long, Epic> epicTasks = new HashMap<>();
     private HistoryManager historyManager = Managers.getDefaultHistory();
 
-    private Set<Task> prioritizedTasks = new TreeSet<>((t1, t2) ->
-            t1.getStartTime().isPresent() && t2.getStartTime().isPresent() ?
-                    (t1.getStartTime().get().isAfter(t2.getStartTime().get()) ? 1 : -1) : 1);
+    private final Comparator<Task> priority = (t1, t2) -> t1.getStartTime().isPresent() && t2.getStartTime().isPresent() ?
+            (t1.getStartTime().get().isAfter(t2.getStartTime().get()) ? 1 : -1) : 1;
+
+    private Set<Task> prioritizedTasks = new TreeSet<>(priority);
 
     private Map<LocalDateTime, Boolean> timeGrid = new HashMap<>();
 
@@ -122,15 +123,15 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    protected Map<Long, Task> getTasks() {
+    protected Map<Long, Task> getInMemoryTasks() {
         return tasks;
     }
 
-    protected Map<Long, SubTask> getSubTasks() {
+    protected Map<Long, SubTask> getInMemorySubTasks() {
         return subTasks;
     }
 
-    protected Map<Long, Epic> getEpicTasks() {
+    protected Map<Long, Epic> getInMemoryEpicTasks() {
         return epicTasks;
     }
 
@@ -259,21 +260,17 @@ public class InMemoryTaskManager implements TaskManager {
             subTask.getSuperEpic().addSubTask(subTask);
 
             prioritizedTasks.add(subTask);
+
         }
 
     }
 
     @Override
-    public void add(Epic epic) throws IllegalArgumentException {
+    public void add(Epic epic) {
 
-        if (isNotCrossOnTimeGrid(epic)) {
+        epicTasks.put(epic.getId(), epic);
 
-            epicTasks.put(epic.getId(), epic);
-
-            prioritizedTasks.add(epic);
-
-        }
-
+        prioritizedTasks.add(epic);
     }
 
     @Override
@@ -325,13 +322,10 @@ public class InMemoryTaskManager implements TaskManager {
 
             removeTaskOnTimeGrid(oldEpic);
 
-            if (isNotCrossOnTimeGrid(epic)) {
+            epicTasks.put(epic.getId(), epic);
 
-                epicTasks.put(epic.getId(), epic);
+            prioritizedTasks.add(epic);
 
-                prioritizedTasks.add(epic);
-
-            }
         }
     }
 

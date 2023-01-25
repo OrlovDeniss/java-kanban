@@ -439,18 +439,21 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     public void getAllSubTasks() {
 
-        taskManager.add(epic);
-        taskManager.add(subTask);
+        var epic1 = new Epic();
+        var subTask1 = new SubTask(epic1);
 
-        final Task[] tasks = {subTask};
+        taskManager.add(epic1);
+        taskManager.add(subTask1);
+
+        final Task[] tasks = {subTask1};
 
         assertArrayEquals(tasks, taskManager.getAllSubTasks().toArray(), TASKS_DO_NOT_MATCH);
 
-        var subTask2 = new SubTask(epic);
+        var subTask2 = new SubTask(epic1);
 
         taskManager.add(subTask2);
 
-        final Task[] tasks2 = {subTask, subTask2};
+        final Task[] tasks2 = {subTask1, subTask2};
 
         assertArrayEquals(tasks2, taskManager.getAllSubTasks().toArray(), TASKS_DO_NOT_MATCH);
 

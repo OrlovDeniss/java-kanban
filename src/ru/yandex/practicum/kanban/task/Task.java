@@ -21,16 +21,20 @@ public class Task {
         this.id = IdManager.getId();
     }
 
-    public String getTitle() {
-        return title;
+    public Task(Long id) {
+        this.id = id;
+    }
+
+    public Optional<String> getTitle() {
+        return Optional.ofNullable(title);
     }
 
     public void setTitle(String title) {
         this.title = title;
     }
 
-    public String getDescription() {
-        return description;
+    public Optional<String> getDescription() {
+        return Optional.ofNullable(description);
     }
 
     public void setDescription(String description) {
@@ -77,6 +81,18 @@ public class Task {
     }
 
     @Override
+    public String toString() {
+        return "Task{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", status=" + status +
+                ", duration=" + duration +
+                ", startTime=" + startTime +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -87,17 +103,5 @@ public class Task {
     @Override
     public int hashCode() {
         return Objects.hash(id, title, description, status, duration, startTime);
-    }
-
-    @Override
-    public String toString() {
-        return "Task{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                ", duration=" + duration +
-                ", startTime=" + startTime +
-                '}';
     }
 }

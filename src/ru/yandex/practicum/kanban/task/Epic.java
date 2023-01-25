@@ -8,33 +8,38 @@ import java.util.*;
 
 public class Epic extends Task {
 
-    private final Map<Long, SubTask> subTasks = new HashMap<>();
+    private Map<Long, SubTask> subTasks = new HashMap<>();
     private LocalDateTime endTime;
 
     public Epic() {
-        updateStatus();
+        update();
+    }
+
+    public Epic(Long id) {
+        setId(id);
+        update();
     }
 
     public void clear() {
         subTasks.clear();
-        updateStatus();
+        update();
     }
 
     public void remove(Long id) {
         subTasks.remove(id);
-        updateStatus();
+        update();
     }
 
     public void addSubTask(SubTask subTask) {
         subTasks.put(subTask.getId(), subTask);
-        updateStatus();
+        update();
     }
 
     public List<SubTask> getAllSubTasks() {
         return new ArrayList<>(subTasks.values());
     }
 
-    private void updateStatus() {
+    private void update() {
 
         if (!subTasks.isEmpty()) {
 
@@ -112,17 +117,4 @@ public class Epic extends Task {
         return "Epic" + super.toString();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        Epic epic = (Epic) o;
-        return Objects.equals(subTasks, epic.subTasks) && Objects.equals(endTime, epic.endTime);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), subTasks, endTime);
-    }
 }

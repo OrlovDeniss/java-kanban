@@ -22,6 +22,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private File file;
     private static final String fileFields = "id,type,name,status,description,epic,duration,startTime";
+    private static final int fileFiledsSize = fileFields.split(",").length;
 
     public FileBackedTasksManager(File file) {
         this.file = file;
@@ -50,9 +51,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private void addHistoryLineToManager(FileBackedTasksManager manager, String historyLine) {
 
         List<Long> historyId = historyFromString(historyLine);
-        Map<Long, Task> tasks = manager.getTasks();
-        Map<Long, Epic> epicTasks = manager.getEpicTasks();
-        Map<Long, SubTask> subTasks = manager.getSubTasks();
+        Map<Long, Task> tasks = manager.getInMemoryTasks();
+        Map<Long, Epic> epicTasks = manager.getInMemoryEpicTasks();
+        Map<Long, SubTask> subTasks = manager.getInMemorySubTasks();
         HistoryManager historyManager = manager.getHistoryManager();
 
         for (Long id : historyId) {
@@ -164,11 +165,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 .append(",")
                 .append(task.getClass().getSimpleName().toUpperCase())
                 .append(",")
-                .append(task.getTitle())
+                .append(task.getTitle().orElse(""))
                 .append(",")
                 .append(task.getStatus())
                 .append(",")
-                .append(task.getDescription())
+                .append(task.getDescription().orElse(""))
                 .append(",");
 
         if (task instanceof SubTask) {
@@ -176,55 +177,64 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             stringBuilder.append(subTask.getSuperEpic().getId());
         }
 
-        stringBuilder.append(",")
-                .append(task.getDuration().orElse(null))
-                .append(",")
-                .append(task.getStartTime().orElse(null))
-                .append(",");
+        stringBuilder.append(",");
+
+        if (task.getDuration().isPresent()) {
+            stringBuilder.append(task.getDuration().get());
+        }
+
+        stringBuilder.append(",");
+
+        if (task.getStartTime().isPresent()) {
+            stringBuilder.append(task.getStartTime().get());
+        }
 
         return stringBuilder.toString();
     }
 
     private Task fromString(String str) {
 
-        String[] taskString = str.split(",");
+        String[] taskString = str.split(",", fileFiledsSize);
 
         var id = Long.parseLong(taskString[0]);
         var type = TypeTask.valueOf(taskString[1]);
-        var name = taskString[2];
-        var status = Status.valueOf(taskString[3]);
-        var description = taskString[4];
-        var duration = taskString[6].equals("null") ? null : Duration.parse(taskString[6]);
-        var startTime = taskString[7].equals("null") ? null : LocalDateTime.parse(taskString[7]);
 
         Task task;
 
         switch (type) {
 
             case TASK:
-                task = new Task();
+                task = new Task(id);
                 break;
 
             case EPIC:
-                task = new Epic();
+                task = new Epic(id);
                 break;
 
             case SUBTASK:
                 Long epicId = Long.parseLong(taskString[5]);
-                task = new SubTask(getEpicTasks().get(epicId));
+                task = new SubTask(id, getInMemoryEpicTasks().get(epicId));
                 break;
 
             default:
                 throw new IllegalArgumentException("Несовместимый тип задачи");
         }
 
-        task.setId(id);
-        task.setTitle(name);
-        task.setStatus(status);
-        task.setDescription(description);
-        task.setDuration(duration);
-        task.setStartTime(startTime);
-
+        if (!taskString[2].isEmpty()) {
+            task.setTitle(taskString[2]);
+        }
+        if (!taskString[3].isEmpty()) {
+            task.setStatus(Status.valueOf(taskString[3]));
+        }
+        if (!taskString[4].isEmpty()) {
+            task.setDescription(taskString[4]);
+        }
+        if (!taskString[6].isEmpty()) {
+            task.setDuration(Duration.parse(taskString[6]));
+        }
+        if (!taskString[7].isEmpty()) {
+            task.setStartTime(LocalDateTime.parse(taskString[7]));
+        }
         return task;
     }
 
