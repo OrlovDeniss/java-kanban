@@ -208,8 +208,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 break;
 
             case EPIC:
-                task = new Epic(id);
-                break;
+                task = new Epic(id);    // Подзадача самостоятельно добавляется в эпик
+                break;                  // При взаимодействии с эпиком, эпик выполняет расчет полей
 
             case SUBTASK:
                 Long epicId = Long.parseLong(taskString[5]);

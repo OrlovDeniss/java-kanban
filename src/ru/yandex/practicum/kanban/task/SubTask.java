@@ -25,12 +25,6 @@ public class SubTask extends Task {
     }
 
     @Override
-    public void setId(Long id) {
-        super.setId(id);
-        superEpic.addSubTask(this);
-    }
-
-    @Override
     public void setStatus(Status status) {
         super.setStatus(status);
         superEpic.addSubTask(this);
