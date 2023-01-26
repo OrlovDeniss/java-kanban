@@ -3,8 +3,6 @@ package ru.yandex.practicum.kanban.test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.kanban.Status;
-import ru.yandex.practicum.kanban.manager.history.HistoryManager;
-import ru.yandex.practicum.kanban.manager.history.InMemoryHistoryManager;
 import ru.yandex.practicum.kanban.manager.taskmanager.TaskManager;
 import ru.yandex.practicum.kanban.task.Epic;
 import ru.yandex.practicum.kanban.task.SubTask;
@@ -24,7 +22,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
     private static final String TASKS_ARE_NOT_RETURNED = "Задачи не возвращаются.";
 
     private final T taskManager;
-    private final HistoryManager historyManager;
 
     private Task task;
     private Epic epic;
@@ -32,7 +29,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     TaskManagerTest(T taskManager) {
         this.taskManager = taskManager;
-        this.historyManager = new InMemoryHistoryManager();
     }
 
     @BeforeEach
@@ -331,7 +327,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         var taskWithWrongId = new Task();
 
-        taskWithWrongId.setId(task.getId()+1);
+        taskWithWrongId.setId(task.getId() + 1);
 
         taskManager.update(taskWithWrongId);
 
@@ -372,7 +368,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         var subTaskWithWrongId = new SubTask(epic);
 
-        subTaskWithWrongId.setId(subTask.getId()+1);
+        subTaskWithWrongId.setId(subTask.getId() + 1);
 
         taskManager.update(subTaskWithWrongId);
 
@@ -408,7 +404,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         var epicWithWrongId = new SubTask(epic);
 
-        epicWithWrongId.setId(epic.getId()+1);
+        epicWithWrongId.setId(epic.getId() + 1);
 
         taskManager.update(epicWithWrongId);
 
@@ -562,7 +558,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     public void shouldBeThrowWhenIncorrectStartTime() {
 
-        task.setStartTime(LocalDateTime.of(2023, 1,1,15,33));
+        task.setStartTime(LocalDateTime.of(2023, 1, 1, 15, 33));
         task.setDuration(Duration.ofMinutes(15));
 
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -575,7 +571,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     public void shouldBeThrowWhenIncorrectDuration() {
 
-        task.setStartTime(LocalDateTime.of(2023, 1,1,15,30));
+        task.setStartTime(LocalDateTime.of(2023, 1, 1, 15, 30));
         task.setDuration(Duration.ofMinutes(17));
 
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,

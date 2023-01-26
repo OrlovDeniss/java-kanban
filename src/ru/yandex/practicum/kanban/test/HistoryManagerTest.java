@@ -8,6 +8,7 @@ import ru.yandex.practicum.kanban.task.Task;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HistoryManagerTest {
@@ -124,17 +125,17 @@ public class HistoryManagerTest {
     @Test
     public void getHistory() {
 
-        assertEquals(0, historyManager.getHistory().size(), WRONG_NUMBER_OF_TASKS);
+        var task1 = new Task();
+        var task2 = new Task();
+        var task3 = new Task();
 
-        historyManager.add(new Task());
+        historyManager.add(task1);
+        historyManager.add(task3);
+        historyManager.add(task2);
 
-        assertEquals(1, historyManager.getHistory().size(), WRONG_NUMBER_OF_TASKS);
+        Task[] trueHistory = {task1, task3, task2};
 
-        for (int i = 0; i < 4; i++) {
-            historyManager.add(new Task());
-        }
-
-        assertEquals(5, historyManager.getHistory().size(), WRONG_NUMBER_OF_TASKS);
+        assertArrayEquals(trueHistory, historyManager.getHistory().toArray(), WRONG_NUMBER_OF_TASKS);
 
     }
 

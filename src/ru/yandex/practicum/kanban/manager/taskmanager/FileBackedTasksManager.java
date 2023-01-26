@@ -13,16 +13,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private File file;
-    private static final String fileFields = "id,type,name,status,description,epic,duration,startTime";
-    private static final int fileFiledsSize = fileFields.split(",").length;
+    private static final String FILE_FIELDS = "id,type,name,status,description,epic,duration,startTime";
+    private static final int FILE_FIELDS_SIZE = FILE_FIELDS.split(",").length;
 
     public FileBackedTasksManager(File file) {
         this.file = file;
@@ -104,7 +101,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
         List<String> writeList = new ArrayList<>();
 
-        writeList.add(fileFields);
+        writeList.add(FILE_FIELDS);
 
         for (Task task : getAllTasks()) {
             writeList.add(toString(task));
@@ -194,7 +191,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private Task fromString(String str) {
 
-        String[] taskString = str.split(",", fileFiledsSize);
+        String[] taskString = str.split(",", FILE_FIELDS_SIZE);
 
         var id = Long.parseLong(taskString[0]);
         var type = TypeTask.valueOf(taskString[1]);
@@ -208,8 +205,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 break;
 
             case EPIC:
-                task = new Epic(id);    // Подзадача самостоятельно добавляется в эпик
-                break;                  // При взаимодействии с эпиком, эпик выполняет расчет полей
+                task = new Epic(id);
+                break;
 
             case SUBTASK:
                 Long epicId = Long.parseLong(taskString[5]);

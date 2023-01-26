@@ -9,7 +9,8 @@ import ru.yandex.practicum.kanban.task.SubTask;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EpicTest {
 
@@ -46,8 +47,6 @@ class EpicTest {
 
         doneSubTask.setStatus(Status.DONE);
 
-        epic.addSubTask(doneSubTask);
-
         assertEquals(Status.DONE, epic.getStatus(), STATUS_ERROR);
 
     }
@@ -61,9 +60,6 @@ class EpicTest {
         newSubTask.setStatus(Status.NEW);
         doneSubTask.setStatus(Status.DONE);
 
-        epic.addSubTask(newSubTask);
-        epic.addSubTask(doneSubTask);
-
         assertEquals(Status.IN_PROGRESS, epic.getStatus(), STATUS_ERROR);
     }
 
@@ -74,15 +70,13 @@ class EpicTest {
 
         inProgressSubTask.setStatus(Status.IN_PROGRESS);
 
-        epic.addSubTask(inProgressSubTask);
-
         assertEquals(Status.IN_PROGRESS, epic.getStatus(), STATUS_ERROR);
     }
 
     @Test
     public void shouldBeStartTimeEqualEarlySubTask() {
 
-        var earlyDateTime = LocalDateTime.of(2023,1,1,1,0);
+        var earlyDateTime = LocalDateTime.of(2023, 1, 1, 1, 0);
 
         var subTask1 = new SubTask(epic);
         var subTask2 = new SubTask(epic);
@@ -90,20 +84,15 @@ class EpicTest {
         subTask1.setStartTime(earlyDateTime);
         subTask2.setStartTime(earlyDateTime.plusDays(1));
 
-        epic.addSubTask(subTask1);
-        epic.addSubTask(subTask2);
-
         assertEquals(earlyDateTime, epic.getStartTime().get(), "Время старта не совпадает.");
 
     }
 
-    @Test void shouldBeStartTimeNullWhenSubTaskStartTimeNull() {
+    @Test
+    void shouldBeStartTimeNullWhenSubTaskStartTimeNull() {
 
         var subTask1 = new SubTask(epic);
         var subTask2 = new SubTask(epic);
-
-        epic.addSubTask(subTask1);
-        epic.addSubTask(subTask2);
 
         assertTrue(subTask1.getStartTime().isEmpty());
         assertTrue(subTask2.getStartTime().isEmpty());
@@ -121,9 +110,6 @@ class EpicTest {
         subTask1.setDuration(Duration.ofMinutes(15));
         subTask2.setDuration(Duration.ofMinutes(15));
 
-        epic.addSubTask(subTask1);
-        epic.addSubTask(subTask2);
-
         assertEquals(Duration.ofMinutes(30), epic.getDuration().get(), "Время окончания не совпадает.");
 
     }
@@ -133,9 +119,6 @@ class EpicTest {
 
         var subTask1 = new SubTask(epic);
         var subTask2 = new SubTask(epic);
-
-        epic.addSubTask(subTask1);
-        epic.addSubTask(subTask2);
 
         assertTrue(subTask1.getDuration().isEmpty());
         assertTrue(subTask2.getDuration().isEmpty());
@@ -147,7 +130,7 @@ class EpicTest {
     @Test
     public void shouldBeEndTimeEqualLateSubTaskEndTime() {
 
-        var earlyDateTime = LocalDateTime.of(2023,1,1,1,0);
+        var earlyDateTime = LocalDateTime.of(2023, 1, 1, 1, 0);
 
         var subTask1 = new SubTask(epic);
         var subTask2 = new SubTask(epic);
@@ -158,20 +141,15 @@ class EpicTest {
         subTask1.setDuration(Duration.ofMinutes(15));
         subTask2.setDuration(Duration.ofMinutes(15));
 
-        epic.addSubTask(subTask1);
-        epic.addSubTask(subTask2);
-
         assertEquals(subTask2.getEndTime().get(), epic.getEndTime().get());
 
     }
 
-    @Test void shouldBeEndTimeNullWhenSubTaskEndTimeNull() {
+    @Test
+    void shouldBeEndTimeNullWhenSubTaskEndTimeNull() {
 
         var subTask1 = new SubTask(epic);
         var subTask2 = new SubTask(epic);
-
-        epic.addSubTask(subTask1);
-        epic.addSubTask(subTask2);
 
         assertTrue(subTask1.getEndTime().isEmpty());
         assertTrue(subTask2.getEndTime().isEmpty());
