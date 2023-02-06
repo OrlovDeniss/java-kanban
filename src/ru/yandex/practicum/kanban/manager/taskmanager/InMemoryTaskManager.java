@@ -6,6 +6,7 @@ import ru.yandex.practicum.kanban.task.Epic;
 import ru.yandex.practicum.kanban.task.SubTask;
 import ru.yandex.practicum.kanban.task.Task;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -19,7 +20,7 @@ public class InMemoryTaskManager implements TaskManager {
     private Map<Long, Epic> epicTasks = new HashMap<>();
     private HistoryManager historyManager = Managers.getDefaultHistory();
 
-    private final Comparator<Task> priority = (t1, t2) -> t1.getStartTime().isPresent() && t2.getStartTime().isPresent() ?
+    private transient final Comparator<Task> priority = (t1, t2) -> t1.getStartTime().isPresent() && t2.getStartTime().isPresent() ?
             (t1.getStartTime().get().isAfter(t2.getStartTime().get()) ? 1 : -1) : 1;
 
     private Set<Task> prioritizedTasks = new TreeSet<>(priority);
@@ -139,30 +140,36 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager;
     }
 
+    public Map<LocalDateTime, Boolean> getTimeGrid() {
+        return timeGrid;
+    }
+
+    public void setTimeGrid(Map<LocalDateTime, Boolean> timeGrid) {
+        this.timeGrid = timeGrid;
+    }
+
     @Override
-    public void clearTasks() {
+    public void clearTasks() throws IOException, InterruptedException {
         tasks.values().forEach(prioritizedTasks::remove);
         tasks.clear();
     }
 
     @Override
-    public void clearSubTasks() {
+    public void clearSubTasks() throws IOException, InterruptedException {
         subTasks.values().forEach(prioritizedTasks::remove);
         subTasks.clear();
-        for (Epic e : epicTasks.values()) {
-            e.clear();
-        }
+        epicTasks.values().forEach(Epic::clear);
     }
 
     @Override
-    public void clearEpicTasks() {
+    public void clearEpicTasks() throws IOException, InterruptedException {
         epicTasks.values().forEach(prioritizedTasks::remove);
         clearSubTasks();
         epicTasks.clear();
     }
 
     @Override
-    public void removeTask(Long id) {
+    public void removeTask(Long id) throws IOException, InterruptedException {
 
         var removableTask = tasks.get(id);
 
@@ -176,7 +183,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void removeSubTask(Long id) {
+    public void removeSubTask(Long id) throws IOException, InterruptedException {
 
         var removableTask = subTasks.get(id);
 
@@ -191,7 +198,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void removeEpic(Long id) {
+    public void removeEpic(Long id) throws IOException, InterruptedException {
 
         var removableEpic = epicTasks.get(id);
 
@@ -215,19 +222,19 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task getTask(Long id) {
+    public Task getTask(Long id) throws IOException, InterruptedException {
         historyManager.add(tasks.get(id));
         return tasks.get(id);
     }
 
     @Override
-    public SubTask getSubTask(Long id) {
+    public SubTask getSubTask(Long id) throws IOException, InterruptedException {
         historyManager.add(subTasks.get(id));
         return subTasks.get(id);
     }
 
     @Override
-    public Epic getEpic(Long id) {
+    public Epic getEpic(Long id) throws IOException, InterruptedException {
         historyManager.add(epicTasks.get(id));
         return epicTasks.get(id);
     }
@@ -238,7 +245,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void add(Task task) throws IllegalArgumentException {
+    public void add(Task task) throws IllegalArgumentException, IOException, InterruptedException {
 
         if (isNotCrossOnTimeGrid(task)) {
 
@@ -251,7 +258,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void add(SubTask subTask) throws IllegalArgumentException {
+    public void add(SubTask subTask) throws IllegalArgumentException, IOException, InterruptedException {
 
         if (isNotCrossOnTimeGrid(subTask)) {
 
@@ -266,15 +273,14 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void add(Epic epic) {
+    public void add(Epic epic) throws IOException, InterruptedException {
 
         epicTasks.put(epic.getId(), epic);
 
-        prioritizedTasks.add(epic);
     }
 
     @Override
-    public void update(Task task) throws IllegalArgumentException {
+    public void update(Task task) throws IllegalArgumentException, IOException, InterruptedException {
 
         if (tasks.containsKey(task.getId())) {
 
@@ -293,7 +299,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void update(SubTask subTask) throws IllegalArgumentException {
+    public void update(SubTask subTask) throws IllegalArgumentException, IOException, InterruptedException {
 
         if (subTasks.containsKey(subTask.getId())) {
 
@@ -314,7 +320,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void update(Epic epic) throws IllegalArgumentException {
+    public void update(Epic epic) throws IllegalArgumentException, IOException, InterruptedException {
 
         if (epicTasks.containsKey(epic.getId())) {
 
@@ -323,8 +329,6 @@ public class InMemoryTaskManager implements TaskManager {
             removeTaskOnTimeGrid(oldEpic);
 
             epicTasks.put(epic.getId(), epic);
-
-            prioritizedTasks.add(epic);
 
         }
     }

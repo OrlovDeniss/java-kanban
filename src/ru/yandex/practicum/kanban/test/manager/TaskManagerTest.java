@@ -1,4 +1,4 @@
-package ru.yandex.practicum.kanban.test;
+package ru.yandex.practicum.kanban.test.manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,6 +8,7 @@ import ru.yandex.practicum.kanban.task.Epic;
 import ru.yandex.practicum.kanban.task.SubTask;
 import ru.yandex.practicum.kanban.task.Task;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,7 +40,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void clearTasks() {
+    public void clearTasks() throws IOException, InterruptedException {
 
         taskManager.add(task);
 
@@ -52,7 +53,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void clearSubTasks() {
+    public void clearSubTasks() throws IOException, InterruptedException {
 
         taskManager.add(subTask);
 
@@ -65,7 +66,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void clearEpicTasks() {
+    public void clearEpicTasks() throws IOException, InterruptedException {
 
         taskManager.add(epic);
         taskManager.add(subTask);
@@ -81,7 +82,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void removeTask() {
+    public void removeTask() throws IOException, InterruptedException {
 
         taskManager.add(task);
 
@@ -105,7 +106,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void removeSubTask() {
+    public void removeSubTask() throws IOException, InterruptedException {
 
         taskManager.add(epic);
         taskManager.add(subTask);
@@ -134,7 +135,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void removeEpic() {
+    public void removeEpic() throws IOException, InterruptedException {
 
         taskManager.add(epic);
         taskManager.add(subTask);
@@ -163,7 +164,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void getTask() {
+    public void getTask() throws IOException, InterruptedException {
 
         taskManager.add(task);
 
@@ -180,7 +181,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void getSubTask() {
+    public void getSubTask() throws IOException, InterruptedException {
 
         taskManager.add(epic);
         taskManager.add(subTask);
@@ -202,7 +203,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void getEpic() {
+    public void getEpic() throws IOException, InterruptedException {
 
         taskManager.add(epic);
 
@@ -219,7 +220,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void getEpicSubTasks() {
+    public void getEpicSubTasks() throws IOException, InterruptedException {
 
         taskManager.add(epic);
         taskManager.add(subTask);
@@ -231,7 +232,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void getNotExistEpicSubtasks() {
+    public void getNotExistEpicSubtasks() throws IOException, InterruptedException {
 
         var emptyEpic = new Epic();
 
@@ -242,7 +243,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void addNewTask() {
+    public void addNewTask() throws IOException, InterruptedException {
 
         taskManager.add(task);
 
@@ -261,7 +262,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void addNewSubTask() {
+    public void addNewSubTask() throws IOException, InterruptedException {
 
         taskManager.add(epic);
         taskManager.add(subTask);
@@ -280,7 +281,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void addNewEpicTask() {
+    public void addNewEpicTask() throws IOException, InterruptedException {
 
         taskManager.add(epic);
 
@@ -299,7 +300,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void updateTask() {
+    public void updateTask() throws IOException, InterruptedException {
 
         taskManager.add(task);
 
@@ -318,7 +319,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void shouldIgnoreWhenUpdateTaskWithWrongId() {
+    public void shouldIgnoreWhenUpdateTaskWithWrongId() throws IOException, InterruptedException {
 
         taskManager.add(task);
 
@@ -337,7 +338,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void updateSubTaskAndCheckEpicStatus() {
+    public void updateSubTaskAndCheckEpicStatus() throws IOException, InterruptedException {
 
         taskManager.add(epic);
         taskManager.add(subTask);
@@ -359,7 +360,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void shouldIgnoreWhenUpdateSubTaskWithWrongId() {
+    public void shouldIgnoreWhenUpdateSubTaskWithWrongId() throws IOException, InterruptedException {
 
         taskManager.add(subTask);
 
@@ -378,7 +379,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void updateEpic() {
+    public void updateEpic() throws IOException, InterruptedException {
 
         taskManager.add(epic);
 
@@ -395,7 +396,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void shouldIgnoreWhenUpdateEpicWithWrongId() {
+    public void shouldIgnoreWhenUpdateEpicWithWrongId() throws IOException, InterruptedException {
 
         taskManager.add(epic);
 
@@ -414,11 +415,13 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void getAllTasks() {
+    public void getAllTasks() throws IOException, InterruptedException {
 
-        taskManager.add(task);
+        var task1 = new Task();
 
-        final Task[] tasks = {task};
+        taskManager.add(task1);
+
+        final Task[] tasks = {task1};
 
         assertArrayEquals(tasks, taskManager.getAllTasks().toArray(), TASKS_DO_NOT_MATCH);
 
@@ -426,14 +429,14 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         taskManager.add(task2);
 
-        final Task[] tasks2 = {task, task2};
+        final Task[] tasks2 = {task1, task2};
 
         assertArrayEquals(tasks2, taskManager.getAllTasks().toArray(), TASKS_DO_NOT_MATCH);
 
     }
 
     @Test
-    public void getAllSubTasks() {
+    public void getAllSubTasks() throws IOException, InterruptedException {
 
         var epic1 = new Epic();
         var subTask1 = new SubTask(epic1);
@@ -456,7 +459,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void getAllEpicTasks() {
+    public void getAllEpicTasks() throws IOException, InterruptedException {
 
         taskManager.add(epic);
 
@@ -467,7 +470,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void getHistory() {
+    public void getHistory() throws IOException, InterruptedException {
 
         taskManager.add(task);
         taskManager.add(epic);
@@ -484,7 +487,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void getPrioritizedTasks() {
+    public void getPrioritizedTasks() throws IOException, InterruptedException {
 
         var task3 = new Task();
         task3.setStartTime(LocalDateTime.of(2023, 2, 1, 22, 0));
@@ -510,7 +513,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void shouldNotBeAddedToManagerIfFoundCrossTime() {
+    public void shouldNotBeAddedToManagerIfFoundCrossTime() throws IOException, InterruptedException {
 
         task.setStartTime(LocalDateTime.of(2023, 1, 5, 13, 30));
         task.setDuration(Duration.ofMinutes(60));
@@ -532,7 +535,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void shouldBeFreeTimeGridAfterRemoveTaskInManager() {
+    public void shouldBeFreeTimeGridAfterRemoveTaskInManager() throws IOException, InterruptedException {
 
         task.setStartTime(LocalDateTime.of(2023, 1, 5, 13, 30));
         task.setDuration(Duration.ofMinutes(60));

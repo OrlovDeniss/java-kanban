@@ -1,4 +1,4 @@
-package ru.yandex.practicum.kanban.test;
+package ru.yandex.practicum.kanban.test.manager;
 
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.kanban.Status;
@@ -8,6 +8,7 @@ import ru.yandex.practicum.kanban.task.SubTask;
 import ru.yandex.practicum.kanban.task.Task;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -15,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager> {
 
-    private FileBackedTasksManager fileBackedTasksManager;
+    private final FileBackedTasksManager fileBackedTasksManager;
     private final File file = new File("resources/data.csv");
 
     public FileBackedTasksManagerTest() {
@@ -27,7 +28,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
     }
 
     @Test
-    public void saveAndLoadEmptyFile() {
+    public void saveAndLoadEmptyFile() throws IOException, InterruptedException {
 
         assertEquals(0, fileBackedTasksManager.getAllTasks().size());
         assertEquals(0, fileBackedTasksManager.getAllEpicTasks().size());
@@ -46,7 +47,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
     }
 
     @Test
-    public void saveAndLoadEpicWithoutHistory() {
+    public void saveAndLoadEpicWithoutHistory() throws IOException, InterruptedException {
 
         var testEpic = new Epic();
         testEpic.setTitle("Test tittle");
@@ -70,7 +71,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
     }
 
     @Test
-    public void saveAndLoadEpicWithHistory() {
+    public void saveAndLoadEpicWithHistory() throws IOException, InterruptedException {
 
         var testEpic = new Epic();
 
@@ -95,7 +96,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
     }
 
     @Test
-    public void saveAndLoadTasks() {
+    public void saveAndLoadTasks() throws IOException, InterruptedException {
 
         var task = new Task();
         var task2 = new Task();
@@ -111,7 +112,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
     }
 
     @Test
-    public void saveAndLoadEpicWithSubTasks() {
+    public void saveAndLoadEpicWithSubTasks() throws IOException, InterruptedException {
 
         var testEpic = new Epic();
         var subTask1 = new SubTask(testEpic);

@@ -8,7 +8,7 @@ import java.util.*;
 
 public class Epic extends Task {
 
-    private Map<Long, SubTask> subTasks = new HashMap<>();
+    private transient Map<Long, SubTask> subTasks = new HashMap<>();
     private LocalDateTime endTime;
 
     public Epic() {
@@ -45,7 +45,7 @@ public class Epic extends Task {
 
             boolean isNewTasks = false;
             boolean isDoneTasks = false;
-
+            
             for (SubTask subTask : subTasks.values()) {
 
                 if (subTask.getStatus() == Status.NEW) {

@@ -6,6 +6,7 @@ import ru.yandex.practicum.kanban.manager.id.IdManager;
 import ru.yandex.practicum.kanban.task.Epic;
 import ru.yandex.practicum.kanban.task.SubTask;
 import ru.yandex.practicum.kanban.task.Task;
+import ru.yandex.practicum.kanban.task.TypeTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,11 +14,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
-    private File file;
+    private final File file;
     private static final String FILE_FIELDS = "id,type,name,status,description,epic,duration,startTime";
     private static final int FILE_FIELDS_SIZE = FILE_FIELDS.split(",").length;
 
@@ -25,7 +29,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         this.file = file;
     }
 
-    public FileBackedTasksManager loadFromFile(File file) {
+    public FileBackedTasksManager loadFromFile(File file) throws IOException, InterruptedException {
 
         FileBackedTasksManager manager = new FileBackedTasksManager(file);
         List<String> fileAllLines = readAllLines(file);
@@ -45,7 +49,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return manager;
     }
 
-    private void addHistoryLineToManager(FileBackedTasksManager manager, String historyLine) {
+    private void addHistoryLineToManager(FileBackedTasksManager manager, String historyLine) throws IOException, InterruptedException {
 
         List<Long> historyId = historyFromString(historyLine);
         Map<Long, Task> tasks = manager.getInMemoryTasks();
@@ -64,7 +68,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private void addTaskLinesToManager(FileBackedTasksManager manager, List<String> taskLines) {
+    private void addTaskLinesToManager(FileBackedTasksManager manager, List<String> taskLines) throws IOException, InterruptedException {
 
         Long lastIdForIdManager = 0L;
 
@@ -97,7 +101,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return Collections.emptyList();
     }
 
-    public void save() {
+    public void save() throws IOException, InterruptedException {
 
         List<String> writeList = new ArrayList<>();
 
@@ -237,94 +241,94 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
 
     @Override
-    public void clearTasks() {
+    public void clearTasks() throws IOException, InterruptedException {
         super.clearTasks();
         save();
     }
 
     @Override
-    public void clearSubTasks() {
+    public void clearSubTasks() throws IOException, InterruptedException {
         super.clearSubTasks();
         save();
     }
 
     @Override
-    public void clearEpicTasks() {
+    public void clearEpicTasks() throws IOException, InterruptedException {
         super.clearEpicTasks();
         save();
     }
 
     @Override
-    public void removeTask(Long id) {
+    public void removeTask(Long id) throws IOException, InterruptedException {
         super.removeTask(id);
         save();
     }
 
     @Override
-    public void removeSubTask(Long id) {
+    public void removeSubTask(Long id) throws IOException, InterruptedException {
         super.removeSubTask(id);
         save();
     }
 
     @Override
-    public void removeEpic(Long id) {
+    public void removeEpic(Long id) throws IOException, InterruptedException {
         super.removeEpic(id);
         save();
     }
 
     @Override
-    public Task getTask(Long id) {
+    public Task getTask(Long id) throws IOException, InterruptedException {
         Task task = super.getTask(id);
         save();
         return task;
     }
 
     @Override
-    public SubTask getSubTask(Long id) {
+    public SubTask getSubTask(Long id) throws IOException, InterruptedException {
         SubTask subTask = super.getSubTask(id);
         save();
         return subTask;
     }
 
     @Override
-    public Epic getEpic(Long id) {
+    public Epic getEpic(Long id) throws IOException, InterruptedException {
         Epic epic = super.getEpic(id);
         save();
         return epic;
     }
 
     @Override
-    public void add(Task task) {
+    public void add(Task task) throws IOException, InterruptedException {
         super.add(task);
         save();
     }
 
     @Override
-    public void add(SubTask subTask) {
+    public void add(SubTask subTask) throws IOException, InterruptedException {
         super.add(subTask);
         save();
     }
 
     @Override
-    public void add(Epic epic) {
+    public void add(Epic epic) throws IOException, InterruptedException {
         super.add(epic);
         save();
     }
 
     @Override
-    public void update(Task task) {
+    public void update(Task task) throws IOException, InterruptedException {
         super.update(task);
         save();
     }
 
     @Override
-    public void update(SubTask subTask) {
+    public void update(SubTask subTask) throws IOException, InterruptedException {
         super.update(subTask);
         save();
     }
 
     @Override
-    public void update(Epic epic) {
+    public void update(Epic epic) throws IOException, InterruptedException {
         super.update(epic);
         save();
     }

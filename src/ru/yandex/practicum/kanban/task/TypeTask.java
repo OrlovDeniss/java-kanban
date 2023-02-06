@@ -1,4 +1,4 @@
-package ru.yandex.practicum.kanban.manager.taskmanager;
+package ru.yandex.practicum.kanban.task;
 
 public enum TypeTask {
 

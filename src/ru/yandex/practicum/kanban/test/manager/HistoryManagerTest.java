@@ -1,4 +1,4 @@
-package ru.yandex.practicum.kanban.test;
+package ru.yandex.practicum.kanban.test.manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

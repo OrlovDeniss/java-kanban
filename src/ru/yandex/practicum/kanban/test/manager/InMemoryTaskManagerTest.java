@@ -1,4 +1,4 @@
-package ru.yandex.practicum.kanban.test;
+package ru.yandex.practicum.kanban.test.manager;
 
 import ru.yandex.practicum.kanban.manager.taskmanager.InMemoryTaskManager;
 

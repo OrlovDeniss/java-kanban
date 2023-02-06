@@ -1,10 +1,11 @@
-package ru.yandex.practicum.kanban.test;
+package ru.yandex.practicum.kanban.test.task;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.kanban.Status;
 import ru.yandex.practicum.kanban.task.Epic;
 import ru.yandex.practicum.kanban.task.SubTask;
+import ru.yandex.practicum.kanban.task.Task;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -146,7 +147,7 @@ class EpicTest {
     }
 
     @Test
-    void shouldBeEndTimeNullWhenSubTaskEndTimeNull() {
+    public void shouldBeEndTimeNullWhenSubTaskEndTimeNull() {
 
         var subTask1 = new SubTask(epic);
         var subTask2 = new SubTask(epic);
