@@ -40,21 +40,16 @@ public class Epic extends Task {
     }
 
     private void update() {
-
         if (!subTasks.isEmpty()) {
-
             boolean isNewTasks = false;
             boolean isDoneTasks = false;
-            
             for (SubTask subTask : subTasks.values()) {
-
                 if (subTask.getStatus() == Status.NEW) {
                     isNewTasks = true;
                 } else if (subTask.getStatus() == Status.DONE) {
                     isDoneTasks = true;
                 }
             }
-
             if (isNewTasks && isDoneTasks || !isNewTasks && !isDoneTasks) {
                 this.setStatus(Status.IN_PROGRESS);
             } else if (isNewTasks) {
@@ -62,46 +57,30 @@ public class Epic extends Task {
             } else {
                 this.setStatus(Status.DONE);
             }
-
             calculateDurationAndStartEndTimes();
-
         } else {
             this.setStatus(Status.NEW);
         }
     }
 
     private void calculateDurationAndStartEndTimes() {
-
         var sumDuration = Duration.ZERO;
         var mostStartTime = LocalDateTime.MAX;
         var mostEndTime = LocalDateTime.MIN;
-
         for (SubTask subTask : subTasks.values()) {
-
             var subTaskDuration = subTask.getDuration();
-
             if (subTaskDuration.isPresent()) {
-
                 sumDuration = sumDuration.plus(subTaskDuration.get());
-
                 setDuration(sumDuration);
             }
-
             var subTaskStartTime = subTask.getStartTime();
-
             if (subTaskStartTime.isPresent() && subTaskStartTime.get().isBefore(mostStartTime)) {
-
                 mostStartTime = subTaskStartTime.get();
-
                 setStartTime(mostStartTime);
             }
-
             var subTaskEndTime = subTask.getEndTime();
-
             if (subTaskEndTime.isPresent() && subTaskEndTime.get().isAfter(mostEndTime)) {
-
                 mostEndTime = subTaskEndTime.get();
-
                 endTime = mostEndTime;
             }
         }

@@ -40,438 +40,303 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void clearTasks() throws IOException, InterruptedException {
-
+    public void clearTasks() {
         taskManager.add(task);
-
         assertEquals(task, taskManager.getTask(task.getId()), TASK_NOT_FOUND);
 
         taskManager.clearTasks();
-
         assertEquals(0, taskManager.getAllTasks().size(), WRONG_NUMBER_OF_TASKS);
-
     }
 
     @Test
-    public void clearSubTasks() throws IOException, InterruptedException {
-
+    public void clearSubTasks() {
         taskManager.add(subTask);
-
         assertEquals(subTask, taskManager.getSubTask(subTask.getId()), TASK_NOT_FOUND);
 
         taskManager.clearSubTasks();
-
         assertEquals(0, taskManager.getAllSubTasks().size(), WRONG_NUMBER_OF_TASKS);
-
     }
 
     @Test
-    public void clearEpicTasks() throws IOException, InterruptedException {
-
+    public void clearEpicTasks() {
         taskManager.add(epic);
         taskManager.add(subTask);
-
         assertEquals(epic, taskManager.getEpic(epic.getId()), TASK_NOT_FOUND);
         assertEquals(subTask, taskManager.getSubTask(subTask.getId()), TASK_NOT_FOUND);
 
         taskManager.clearEpicTasks();
-
         assertEquals(0, taskManager.getAllEpicTasks().size(), WRONG_NUMBER_OF_TASKS);
         assertEquals(0, taskManager.getAllSubTasks().size(), WRONG_NUMBER_OF_TASKS);
-
     }
 
     @Test
-    public void removeTask() throws IOException, InterruptedException {
-
+    public void removeTask() {
         taskManager.add(task);
-
         assertEquals(task, taskManager.getTask(task.getId()), TASK_NOT_FOUND);
         assertEquals(1, taskManager.getAllTasks().size(), WRONG_NUMBER_OF_TASKS);
 
         taskManager.removeTask(task.getId());
-
         assertEquals(0, taskManager.getAllTasks().size(), WRONG_NUMBER_OF_TASKS);
-
     }
 
     @Test
     public void removeTaskWithNotExistId() {
-
         assertEquals(0, taskManager.getAllTasks().size(), WRONG_NUMBER_OF_TASKS);
-
         assertThrows(NullPointerException.class,
                 () -> taskManager.removeTask(1L));
-
     }
 
     @Test
-    public void removeSubTask() throws IOException, InterruptedException {
-
+    public void removeSubTask() {
         taskManager.add(epic);
         taskManager.add(subTask);
-
         assertEquals(epic, taskManager.getEpic(epic.getId()), TASK_NOT_FOUND);
         assertEquals(subTask, taskManager.getSubTask(subTask.getId()), TASK_NOT_FOUND);
-
         assertEquals(epic, taskManager.getSubTask(subTask.getId()).getSuperEpic(), TASKS_DO_NOT_MATCH);
-
         assertEquals(1, taskManager.getAllEpicTasks().size(), WRONG_NUMBER_OF_TASKS);
         assertEquals(1, taskManager.getAllSubTasks().size(), WRONG_NUMBER_OF_TASKS);
 
         taskManager.removeSubTask(subTask.getId());
-
         assertEquals(1, taskManager.getAllEpicTasks().size(), WRONG_NUMBER_OF_TASKS);
         assertEquals(0, taskManager.getAllSubTasks().size(), WRONG_NUMBER_OF_TASKS);
-
     }
 
     @Test
     public void removeSubTaskWithNotExistId() {
-
         assertThrows(NullPointerException.class,
                 () -> taskManager.removeSubTask(5L));
-
     }
 
     @Test
-    public void removeEpic() throws IOException, InterruptedException {
-
+    public void removeEpic() {
         taskManager.add(epic);
         taskManager.add(subTask);
-
         assertEquals(epic, taskManager.getEpic(epic.getId()), TASK_NOT_FOUND);
         assertEquals(subTask, taskManager.getSubTask(subTask.getId()), TASK_NOT_FOUND);
-
         assertEquals(epic, taskManager.getSubTask(subTask.getId()).getSuperEpic(), TASKS_DO_NOT_MATCH);
-
         assertEquals(1, taskManager.getAllEpicTasks().size(), WRONG_NUMBER_OF_TASKS);
         assertEquals(1, taskManager.getAllSubTasks().size(), WRONG_NUMBER_OF_TASKS);
 
         taskManager.removeEpic(epic.getId());
-
         assertEquals(0, taskManager.getAllEpicTasks().size(), WRONG_NUMBER_OF_TASKS);
         assertEquals(0, taskManager.getAllSubTasks().size(), WRONG_NUMBER_OF_TASKS);
-
     }
 
     @Test
     public void removeEpicWithNotExistId() {
-
         assertThrows(NullPointerException.class,
                 () -> taskManager.removeEpic(0L));
-
     }
 
     @Test
-    public void getTask() throws IOException, InterruptedException {
-
+    public void getTask() {
         taskManager.add(task);
-
         assertEquals(task, taskManager.getTask(task.getId()), TASKS_DO_NOT_MATCH);
-
     }
 
     @Test
     public void getNotExistTask() {
-
         assertThrows(NullPointerException.class,
                 () -> taskManager.getTask(0L));
-
     }
 
     @Test
-    public void getSubTask() throws IOException, InterruptedException {
-
+    public void getSubTask() {
         taskManager.add(epic);
         taskManager.add(subTask);
-
         assertEquals(subTask, taskManager.getEpic(epic.getId()).getAllSubTasks().get(0), TASKS_DO_NOT_MATCH);
-
         assertEquals(epic, taskManager.getSubTask(subTask.getId()).getSuperEpic(), TASKS_DO_NOT_MATCH);
-
         assertEquals(subTask, taskManager.getSubTask(subTask.getId()), TASKS_DO_NOT_MATCH);
-
     }
 
     @Test
     public void getNotExistSubTask() {
-
         assertThrows(NullPointerException.class,
                 () -> taskManager.getSubTask(0L));
-
     }
 
     @Test
-    public void getEpic() throws IOException, InterruptedException {
-
+    public void getEpic() {
         taskManager.add(epic);
-
         assertEquals(epic, taskManager.getEpic(epic.getId()), TASKS_DO_NOT_MATCH);
-
     }
 
     @Test
     public void getNotExistEpic() {
-
         assertThrows(NullPointerException.class,
                 () -> taskManager.getEpic(0L));
-
     }
 
     @Test
-    public void getEpicSubTasks() throws IOException, InterruptedException {
-
+    public void getEpicSubTasks() {
         taskManager.add(epic);
         taskManager.add(subTask);
-
         final SubTask[] subTasksTestArray = {subTask};
-
         assertArrayEquals(subTasksTestArray, taskManager.getEpicSubTasks(epic).toArray(), TASKS_DO_NOT_MATCH);
-
     }
 
     @Test
-    public void getNotExistEpicSubtasks() throws IOException, InterruptedException {
-
+    public void getNotExistEpicSubtasks() {
         var emptyEpic = new Epic();
-
         taskManager.add(emptyEpic);
-
         assertEquals(0, taskManager.getEpicSubTasks(emptyEpic).size());
-
     }
 
     @Test
-    public void addNewTask() throws IOException, InterruptedException {
-
+    public void addNewTask() {
         taskManager.add(task);
-
         assertNotNull(taskManager.getTask(task.getId()), TASK_NOT_FOUND);
-
         assertEquals(task, taskManager.getTask(task.getId()), TASKS_DO_NOT_MATCH);
 
         final List<Task> tasks = taskManager.getAllTasks();
-
         assertNotNull(tasks, TASKS_ARE_NOT_RETURNED);
-
         assertEquals(1, tasks.size(), WRONG_NUMBER_OF_TASKS);
-
         assertEquals(task, tasks.get(0), TASKS_DO_NOT_MATCH);
-
     }
 
     @Test
-    public void addNewSubTask() throws IOException, InterruptedException {
-
+    public void addNewSubTask() {
         taskManager.add(epic);
         taskManager.add(subTask);
-
         assertNotNull(taskManager.getSubTask(subTask.getId()), TASK_NOT_FOUND);
-
         assertEquals(subTask, taskManager.getSubTask(subTask.getId()), TASKS_DO_NOT_MATCH);
 
         final List<SubTask> subTasks = taskManager.getAllSubTasks();
-
         assertNotNull(subTasks, TASKS_ARE_NOT_RETURNED);
-
         assertEquals(1, subTasks.size(), WRONG_NUMBER_OF_TASKS);
-
         assertEquals(subTask, subTasks.get(0), TASKS_DO_NOT_MATCH);
     }
 
     @Test
-    public void addNewEpicTask() throws IOException, InterruptedException {
-
+    public void addNewEpicTask() {
         taskManager.add(epic);
-
         assertNotNull(taskManager.getEpic(epic.getId()), TASK_NOT_FOUND);
-
         assertEquals(epic, taskManager.getEpic(epic.getId()), TASKS_DO_NOT_MATCH);
-
         final List<Epic> epicTasks = taskManager.getAllEpicTasks();
-
         assertNotNull(epicTasks, TASKS_ARE_NOT_RETURNED);
-
         assertEquals(1, epicTasks.size(), WRONG_NUMBER_OF_TASKS);
-
         assertEquals(epic, epicTasks.get(0), TASKS_DO_NOT_MATCH);
-
     }
 
     @Test
-    public void updateTask() throws IOException, InterruptedException {
-
+    public void updateTask() {
         taskManager.add(task);
-
         assertEquals(task, taskManager.getTask(task.getId()), TASKS_DO_NOT_MATCH);
 
         var taskForUpdate = new Task();
-
         taskForUpdate.setId(task.getId());
-
         taskManager.update(taskForUpdate);
-
         assertEquals(taskForUpdate, taskManager.getTask(task.getId()), TASKS_DO_NOT_MATCH);
-
         assertEquals(1, taskManager.getAllTasks().size(), WRONG_NUMBER_OF_TASKS);
-
     }
 
     @Test
-    public void shouldIgnoreWhenUpdateTaskWithWrongId() throws IOException, InterruptedException {
-
+    public void shouldIgnoreWhenUpdateTaskWithWrongId() {
         taskManager.add(task);
-
         assertEquals(1, taskManager.getAllTasks().size(), TASKS_DO_NOT_MATCH);
         assertEquals(task, taskManager.getAllTasks().get(0));
 
         var taskWithWrongId = new Task();
-
         taskWithWrongId.setId(task.getId() + 1);
 
         taskManager.update(taskWithWrongId);
-
         assertEquals(1, taskManager.getAllTasks().size(), TASKS_DO_NOT_MATCH);
         assertEquals(task, taskManager.getAllTasks().get(0));
-
     }
 
     @Test
-    public void updateSubTaskAndCheckEpicStatus() throws IOException, InterruptedException {
-
+    public void updateSubTaskAndCheckEpicStatus() {
         taskManager.add(epic);
         taskManager.add(subTask);
-
         assertEquals(Status.NEW, taskManager.getEpic(epic.getId()).getStatus());
 
         subTask.setStatus(Status.IN_PROGRESS);
-
         taskManager.update(subTask);
-
         assertEquals(Status.IN_PROGRESS, taskManager.getEpic(epic.getId()).getStatus());
 
         subTask.setStatus(Status.DONE);
-
         taskManager.update(subTask);
-
         assertEquals(Status.DONE, taskManager.getEpic(epic.getId()).getStatus());
-
     }
 
     @Test
-    public void shouldIgnoreWhenUpdateSubTaskWithWrongId() throws IOException, InterruptedException {
-
+    public void shouldIgnoreWhenUpdateSubTaskWithWrongId() {
         taskManager.add(subTask);
-
         assertEquals(1, taskManager.getAllSubTasks().size(), TASKS_DO_NOT_MATCH);
         assertEquals(subTask, taskManager.getAllSubTasks().get(0));
 
         var subTaskWithWrongId = new SubTask(epic);
-
         subTaskWithWrongId.setId(subTask.getId() + 1);
-
         taskManager.update(subTaskWithWrongId);
-
         assertEquals(1, taskManager.getAllSubTasks().size(), TASKS_DO_NOT_MATCH);
         assertEquals(subTask, taskManager.getAllSubTasks().get(0));
-
     }
 
     @Test
-    public void updateEpic() throws IOException, InterruptedException {
-
+    public void updateEpic() {
         taskManager.add(epic);
-
         assertEquals(epic, taskManager.getEpic(epic.getId()), TASKS_DO_NOT_MATCH);
 
         var epicForUpdate = new Epic();
         epicForUpdate.setId(epic.getId());
-
         taskManager.update(epicForUpdate);
-
         assertEquals(epicForUpdate, taskManager.getEpic(epicForUpdate.getId()), TASKS_DO_NOT_MATCH);
         assertEquals(1, taskManager.getAllEpicTasks().size());
-
     }
 
     @Test
-    public void shouldIgnoreWhenUpdateEpicWithWrongId() throws IOException, InterruptedException {
-
+    public void shouldIgnoreWhenUpdateEpicWithWrongId() {
         taskManager.add(epic);
-
         assertEquals(1, taskManager.getAllEpicTasks().size(), TASKS_DO_NOT_MATCH);
         assertEquals(epic, taskManager.getAllEpicTasks().get(0));
 
         var epicWithWrongId = new SubTask(epic);
-
         epicWithWrongId.setId(epic.getId() + 1);
-
         taskManager.update(epicWithWrongId);
-
         assertEquals(1, taskManager.getAllEpicTasks().size(), TASKS_DO_NOT_MATCH);
         assertEquals(epic, taskManager.getAllEpicTasks().get(0));
-
     }
 
     @Test
-    public void getAllTasks() throws IOException, InterruptedException {
-
+    public void getAllTasks() {
         var task1 = new Task();
-
         taskManager.add(task1);
 
         final Task[] tasks = {task1};
-
         assertArrayEquals(tasks, taskManager.getAllTasks().toArray(), TASKS_DO_NOT_MATCH);
 
         var task2 = new Task();
-
         taskManager.add(task2);
-
         final Task[] tasks2 = {task1, task2};
-
         assertArrayEquals(tasks2, taskManager.getAllTasks().toArray(), TASKS_DO_NOT_MATCH);
-
     }
 
     @Test
     public void getAllSubTasks() throws IOException, InterruptedException {
-
         var epic1 = new Epic();
         var subTask1 = new SubTask(epic1);
-
         taskManager.add(epic1);
         taskManager.add(subTask1);
 
         final Task[] tasks = {subTask1};
-
         assertArrayEquals(tasks, taskManager.getAllSubTasks().toArray(), TASKS_DO_NOT_MATCH);
 
         var subTask2 = new SubTask(epic1);
-
         taskManager.add(subTask2);
 
         final Task[] tasks2 = {subTask1, subTask2};
-
         assertArrayEquals(tasks2, taskManager.getAllSubTasks().toArray(), TASKS_DO_NOT_MATCH);
-
     }
 
     @Test
-    public void getAllEpicTasks() throws IOException, InterruptedException {
-
+    public void getAllEpicTasks() {
         taskManager.add(epic);
-
         final Task[] tasks = {epic};
-
         assertArrayEquals(tasks, taskManager.getAllEpicTasks().toArray(), TASKS_DO_NOT_MATCH);
-
     }
 
     @Test
     public void getHistory() throws IOException, InterruptedException {
-
         taskManager.add(task);
         taskManager.add(epic);
         taskManager.add(subTask);
@@ -481,14 +346,11 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.getEpic(epic.getId());
 
         final Task[] trueHistoryArray = {task, subTask, epic};
-
         assertArrayEquals(trueHistoryArray, taskManager.getHistory().toArray(), TASKS_DO_NOT_MATCH);
-
     }
 
     @Test
-    public void getPrioritizedTasks() throws IOException, InterruptedException {
-
+    public void getPrioritizedTasks() {
         var task3 = new Task();
         task3.setStartTime(LocalDateTime.of(2023, 2, 1, 22, 0));
         taskManager.add(task3);
@@ -507,36 +369,28 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.add(task5);
 
         Task[] trueTimePriority = {task, task2, task3, task4, task5};
-
         assertArrayEquals(trueTimePriority, taskManager.getPrioritizedTasks().toArray());
-
     }
 
     @Test
-    public void shouldNotBeAddedToManagerIfFoundCrossTime() throws IOException, InterruptedException {
-
+    public void shouldNotBeAddedToManagerIfFoundCrossTime() {
         task.setStartTime(LocalDateTime.of(2023, 1, 5, 13, 30));
         task.setDuration(Duration.ofMinutes(60));
-
         taskManager.add(task);
-
         assertEquals(1, taskManager.getAllTasks().size());
         assertEquals(task, taskManager.getTask(task.getId()));
 
         var crossTask = new Task();
         crossTask.setStartTime(LocalDateTime.of(2023, 1, 5, 14, 0));
         crossTask.setDuration(Duration.ofMinutes(60));
-
         taskManager.add(crossTask);
 
         assertEquals(1, taskManager.getAllTasks().size());
         assertEquals(task, taskManager.getTask(task.getId()));
-
     }
 
     @Test
-    public void shouldBeFreeTimeGridAfterRemoveTaskInManager() throws IOException, InterruptedException {
-
+    public void shouldBeFreeTimeGridAfterRemoveTaskInManager() {
         task.setStartTime(LocalDateTime.of(2023, 1, 5, 13, 30));
         task.setDuration(Duration.ofMinutes(60));
 
@@ -555,33 +409,24 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         assertEquals(1, taskManager.getAllTasks().size());
         assertEquals(crossTask, taskManager.getTask(crossTask.getId()));
-
     }
 
     @Test
     public void shouldBeThrowWhenIncorrectStartTime() {
-
         task.setStartTime(LocalDateTime.of(2023, 1, 1, 15, 33));
         task.setDuration(Duration.ofMinutes(15));
-
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> taskManager.add(task));
-
         assertEquals("Начальное время задачи должно быть кратно 15 мин.", exception.getMessage());
-
     }
 
     @Test
     public void shouldBeThrowWhenIncorrectDuration() {
-
         task.setStartTime(LocalDateTime.of(2023, 1, 1, 15, 30));
         task.setDuration(Duration.ofMinutes(17));
-
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> taskManager.add(task));
-
         assertEquals("Длительность задачи должна быть кратна 15 мин.", exception.getMessage());
-
     }
 
 }

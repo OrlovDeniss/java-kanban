@@ -9,37 +9,37 @@ import java.util.List;
 
 public interface TaskManager {
 
-    void clearTasks() throws IOException, InterruptedException;
+    void clearTasks();
 
-    void clearSubTasks() throws IOException, InterruptedException;
+    void clearSubTasks();
 
-    void clearEpicTasks() throws IOException, InterruptedException;
+    void clearEpicTasks();
 
-    void removeTask(Long id) throws IOException, InterruptedException;
+    void removeTask(Long id);
 
-    void removeSubTask(Long id) throws IOException, InterruptedException;
+    void removeSubTask(Long id);
 
-    void removeEpic(Long id) throws IOException, InterruptedException;
+    void removeEpic(Long id);
 
-    Task getTask(Long id) throws IOException, InterruptedException;
+    Task getTask(Long id);
 
-    SubTask getSubTask(Long id) throws IOException, InterruptedException;
+    SubTask getSubTask(Long id);
 
-    Epic getEpic(Long id) throws IOException, InterruptedException;
+    Epic getEpic(Long id);
 
     List<SubTask> getEpicSubTasks(Epic epic);
 
-    void add(Task task) throws IOException, InterruptedException;
+    void add(Task task);
 
-    void add(SubTask subTask) throws IOException, InterruptedException;
+    void add(SubTask subTask);
 
-    void add(Epic epic) throws IOException, InterruptedException;
+    void add(Epic epic);
 
-    void update(Task task) throws IOException, InterruptedException;
+    void update(Task task);
 
-    void update(SubTask subTask) throws IOException, InterruptedException;
+    void update(SubTask subTask);
 
-    void update(Epic epic) throws IOException, InterruptedException;
+    void update(Epic epic);
 
     List<Task> getAllTasks();
 

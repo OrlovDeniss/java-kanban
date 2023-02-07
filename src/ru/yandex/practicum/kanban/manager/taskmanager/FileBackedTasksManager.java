@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
-    private final File file;
+    private File file;
     private static final String FILE_FIELDS = "id,type,name,status,description,epic,duration,startTime";
     private static final int FILE_FIELDS_SIZE = FILE_FIELDS.split(",").length;
 
@@ -29,19 +29,16 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         this.file = file;
     }
 
-    public FileBackedTasksManager loadFromFile(File file) throws IOException, InterruptedException {
+    protected FileBackedTasksManager() {
+    }
 
-        FileBackedTasksManager manager = new FileBackedTasksManager(file);
-        List<String> fileAllLines = readAllLines(file);
-
+    public FileBackedTasksManager loadFromFile(File file) {
+        var manager = new FileBackedTasksManager(file);
+        var fileAllLines = readAllLines(file);
         if (fileAllLines.size() > 1) {
-
             List<String> taskLines = fileAllLines.subList(1, fileAllLines.size() - 2);
-
             addTaskLinesToManager(manager, taskLines);
-
             String historyLine = fileAllLines.get(fileAllLines.size() - 1);
-
             if (!historyLine.isEmpty()) {
                 addHistoryLineToManager(manager, historyLine);
             }
@@ -49,14 +46,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return manager;
     }
 
-    private void addHistoryLineToManager(FileBackedTasksManager manager, String historyLine) throws IOException, InterruptedException {
-
+    private void addHistoryLineToManager(FileBackedTasksManager manager, String historyLine) {
         List<Long> historyId = historyFromString(historyLine);
         Map<Long, Task> tasks = manager.getInMemoryTasks();
         Map<Long, Epic> epicTasks = manager.getInMemoryEpicTasks();
         Map<Long, SubTask> subTasks = manager.getInMemorySubTasks();
         HistoryManager historyManager = manager.getHistoryManager();
-
         for (Long id : historyId) {
             if (tasks.containsKey(id)) {
                 historyManager.add(manager.getTask(id));
@@ -68,14 +63,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private void addTaskLinesToManager(FileBackedTasksManager manager, List<String> taskLines) throws IOException, InterruptedException {
-
+    private void addTaskLinesToManager(FileBackedTasksManager manager, List<String> taskLines) {
         Long lastIdForIdManager = 0L;
-
         for (String taskLine : taskLines) {
-
             Task task = manager.fromString(taskLine);
-
             if (task instanceof Epic) {
                 manager.add((Epic) task);
             } else if (task instanceof SubTask) {
@@ -83,12 +74,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             } else {
                 manager.add(task);
             }
-
             if (lastIdForIdManager < task.getId()) {
                 lastIdForIdManager = task.getId();
             }
         }
-
         IdManager.setStartId(lastIdForIdManager + 1L);
     }
 
@@ -101,12 +90,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return Collections.emptyList();
     }
 
-    public void save() throws IOException, InterruptedException {
-
+    public void save() {
         List<String> writeList = new ArrayList<>();
-
         writeList.add(FILE_FIELDS);
-
         for (Task task : getAllTasks()) {
             writeList.add(toString(task));
         }
@@ -116,10 +102,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         for (SubTask task : getAllSubTasks()) {
             writeList.add(toString(task));
         }
-
         writeList.add("");
         writeList.add(historyToString(getHistoryManager()));
-
         writeFile(file, writeList);
     }
 
@@ -132,36 +116,28 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private String historyToString(HistoryManager historyManager) {
-
         StringBuilder stringBuilder = new StringBuilder();
-
         for (Task task : historyManager.getHistory()) {
             stringBuilder.append(task.getId())
                     .append(",");
         }
-
         if (stringBuilder.length() > 0) {
             stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         }
-
         return stringBuilder.toString();
+
     }
 
     private List<Long> historyFromString(String str) {
-
         List<Long> historyTasksId = new ArrayList<>();
-
         for (String s : str.split(",")) {
             historyTasksId.add(Long.parseLong(s));
         }
-
         return historyTasksId;
     }
 
     private String toString(Task task) {
-
         StringBuilder stringBuilder = new StringBuilder();
-
         stringBuilder.append(task.getId())
                 .append(",")
                 .append(task.getClass().getSimpleName().toUpperCase())
@@ -172,51 +148,38 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 .append(",")
                 .append(task.getDescription().orElse(""))
                 .append(",");
-
         if (task instanceof SubTask) {
             SubTask subTask = (SubTask) task;
             stringBuilder.append(subTask.getSuperEpic().getId());
         }
-
         stringBuilder.append(",");
-
         if (task.getDuration().isPresent()) {
             stringBuilder.append(task.getDuration().get());
         }
-
         stringBuilder.append(",");
-
         if (task.getStartTime().isPresent()) {
             stringBuilder.append(task.getStartTime().get());
         }
-
         return stringBuilder.toString();
     }
 
     private Task fromString(String str) {
-
-        String[] taskString = str.split(",", FILE_FIELDS_SIZE);
-
+        var taskString = str.split(",", FILE_FIELDS_SIZE);
         var id = Long.parseLong(taskString[0]);
         var type = TypeTask.valueOf(taskString[1]);
-
         Task task;
 
         switch (type) {
-
             case TASK:
                 task = new Task(id);
                 break;
-
             case EPIC:
                 task = new Epic(id);
                 break;
-
             case SUBTASK:
-                Long epicId = Long.parseLong(taskString[5]);
+                var epicId = Long.parseLong(taskString[5]);
                 task = new SubTask(id, getInMemoryEpicTasks().get(epicId));
                 break;
-
             default:
                 throw new IllegalArgumentException("Несовместимый тип задачи");
         }
@@ -241,94 +204,94 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
 
     @Override
-    public void clearTasks() throws IOException, InterruptedException {
+    public void clearTasks() {
         super.clearTasks();
         save();
     }
 
     @Override
-    public void clearSubTasks() throws IOException, InterruptedException {
+    public void clearSubTasks() {
         super.clearSubTasks();
         save();
     }
 
     @Override
-    public void clearEpicTasks() throws IOException, InterruptedException {
+    public void clearEpicTasks() {
         super.clearEpicTasks();
         save();
     }
 
     @Override
-    public void removeTask(Long id) throws IOException, InterruptedException {
+    public void removeTask(Long id) {
         super.removeTask(id);
         save();
     }
 
     @Override
-    public void removeSubTask(Long id) throws IOException, InterruptedException {
+    public void removeSubTask(Long id) {
         super.removeSubTask(id);
         save();
     }
 
     @Override
-    public void removeEpic(Long id) throws IOException, InterruptedException {
+    public void removeEpic(Long id) {
         super.removeEpic(id);
         save();
     }
 
     @Override
-    public Task getTask(Long id) throws IOException, InterruptedException {
+    public Task getTask(Long id) {
         Task task = super.getTask(id);
         save();
         return task;
     }
 
     @Override
-    public SubTask getSubTask(Long id) throws IOException, InterruptedException {
+    public SubTask getSubTask(Long id) {
         SubTask subTask = super.getSubTask(id);
         save();
         return subTask;
     }
 
     @Override
-    public Epic getEpic(Long id) throws IOException, InterruptedException {
+    public Epic getEpic(Long id) {
         Epic epic = super.getEpic(id);
         save();
         return epic;
     }
 
     @Override
-    public void add(Task task) throws IOException, InterruptedException {
+    public void add(Task task) {
         super.add(task);
         save();
     }
 
     @Override
-    public void add(SubTask subTask) throws IOException, InterruptedException {
+    public void add(SubTask subTask) {
         super.add(subTask);
         save();
     }
 
     @Override
-    public void add(Epic epic) throws IOException, InterruptedException {
+    public void add(Epic epic) {
         super.add(epic);
         save();
     }
 
     @Override
-    public void update(Task task) throws IOException, InterruptedException {
+    public void update(Task task) {
         super.update(task);
         save();
     }
 
     @Override
-    public void update(SubTask subTask) throws IOException, InterruptedException {
+    public void update(SubTask subTask) {
         super.update(subTask);
         save();
     }
 
     @Override
-    public void update(Epic epic) throws IOException, InterruptedException {
+    public void update(Epic epic) {
         super.update(epic);
         save();
     }

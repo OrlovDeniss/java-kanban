@@ -8,13 +8,11 @@ import java.io.IOException;
 public class HistoryHandler extends AbstractHandler {
 
     public HistoryHandler(TaskManager manager) {
-        this.manager = manager;
+        super(manager);
     }
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-
-        sendText(exchange, gson.toJson(manager.getHistory()));
-
+        sendText(exchange, toJson(manager.getHistory()));
     }
 }

@@ -19,64 +19,50 @@ public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
     static KVServer kvServer;
     HttpTaskManager manager;
 
-    HttpTaskManagerTest() throws IOException, InterruptedException {
-
+    HttpTaskManagerTest() {
         super(new HttpTaskManager("http://localhost:8078"));
         manager = new HttpTaskManager("http://localhost:8078");
-
     }
 
     @BeforeAll
     public static void beforeAll() throws IOException {
-
         kvServer = new KVServer();
         kvServer.start();
-
     }
 
     @Test
-    public void saveAndLoadWhenEmpty() throws IOException, InterruptedException {
-
+    public void saveAndLoadWhenEmpty() {
         assertEquals(0, manager.getAllTasks().size());
         assertEquals(0, manager.getAllEpicTasks().size());
         assertEquals(0, manager.getAllSubTasks().size());
         assertEquals(0, manager.getHistory().size());
-
         manager.save();
 
         var newManager = manager.loadManagerState();
-
         assertEquals(0, newManager.getAllTasks().size());
         assertEquals(0, newManager.getAllEpicTasks().size());
         assertEquals(0, newManager.getAllSubTasks().size());
         assertEquals(0, newManager.getHistory().size());
-
     }
 
     @Test
-    public void saveAndLoadTasksAndHistory() throws IOException, InterruptedException {
-
+    public void saveAndLoadTasksAndHistory() {
         var task = new Task();
         var epic = new Epic();
         var subTask = new SubTask(epic);
-
         subTask.setStartTime(LocalDateTime.of(2023, 1, 1, 13, 0));
         subTask.setDuration(Duration.ofMinutes(45));
 
         manager.add(task);
         manager.add(epic);
         manager.add(subTask);
-
         manager.getSubTask(subTask.getId());
 
         var newManager = manager.loadManagerState();
-
         assertEquals(task, newManager.getAllTasks().get(0));
         assertEquals(epic, newManager.getAllEpicTasks().get(0));
         assertEquals(subTask, newManager.getAllSubTasks().get(0));
-
         assertEquals(subTask, newManager.getHistory().get(0));
-
     }
 
 }

@@ -17,13 +17,10 @@ public class KVClientServerTest {
     String url = "http://localhost:8078";
 
     @BeforeEach
-    void beforeEach() throws IOException, InterruptedException {
-
+    void beforeEach() throws IOException {
         server = new KVServer();
         server.start();
-
         client = new KVTaskClient(url);
-
     }
 
     @AfterEach
@@ -32,18 +29,14 @@ public class KVClientServerTest {
     }
 
     @Test
-    void saveLoadTest() throws IOException, InterruptedException {
-
+    void saveLoadTest() {
         var key = "key";
         var value = "value";
         var newValue = "newValue";
-
         client.put(key, value);
         assertEquals(value, client.load(key));
-
         client.put(key, newValue);
         assertEquals(newValue, client.load(key));
-
     }
 
 }

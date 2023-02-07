@@ -8,8 +8,6 @@ import java.util.List;
 public class SubTaskClassServerTest extends HttpTaskServerTest<SubTask> {
 
     SubTaskClassServerTest() {
-        super(SubTask.class, new TypeToken<List<SubTask>>() {
-        }.getType(), new TypeToken<SubTask>() {
-        }.getType());
+        super(SubTask.class, new TypeToken<List<SubTask>>() {}.getType(), new TypeToken<SubTask>() {}.getType());
     }
 }

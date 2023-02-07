@@ -1,25 +1,22 @@
 package ru.yandex.practicum.kanban.manager.web.server.handler;
 
 import com.sun.net.httpserver.HttpExchange;
+import ru.yandex.practicum.kanban.manager.taskmanager.TaskManager;
 
 import java.io.IOException;
 import java.util.Objects;
 
 public abstract class AbstractTaskHandler extends AbstractHandler {
 
-    protected long bufferId = -1L;
+    AbstractTaskHandler(TaskManager manager) {
+        super(manager);
+    }
 
     @Override
     public void handle(HttpExchange exchange) {
-
-        bufferId = -1L;
-
         EndPoint endPoint = getEndPoint(exchange);
-
         try {
-
             switch (endPoint) {
-
                 case GET_ALL:
                     getAllHandler(exchange);
                     break;
@@ -37,9 +34,8 @@ public abstract class AbstractTaskHandler extends AbstractHandler {
                     break;
                 default:
                     unknownHandler(exchange);
-
             }
-        } catch (Exception e) {
+        } catch (IOException  e) {
             e.printStackTrace();
         } finally {
             exchange.close();
@@ -48,28 +44,24 @@ public abstract class AbstractTaskHandler extends AbstractHandler {
 
     protected abstract void unknownHandler(HttpExchange exchange) throws IOException;
 
-    protected abstract void delByIdHandler(HttpExchange exchange) throws IOException, InterruptedException;
+    protected abstract void delByIdHandler(HttpExchange exchange) throws IOException;
 
-    protected abstract void delAllHandler(HttpExchange exchange) throws IOException, InterruptedException;
+    protected abstract void delAllHandler(HttpExchange exchange) throws IOException;
 
-    protected abstract void getByIdHandler(HttpExchange exchange) throws IOException, InterruptedException;
+    protected abstract void getByIdHandler(HttpExchange exchange) throws IOException;
 
     protected abstract void getAllHandler(HttpExchange exchange) throws IOException;
 
-    protected abstract void postHandler(HttpExchange exchange) throws IOException, InterruptedException;
+    protected abstract void postHandler(HttpExchange exchange) throws IOException;
 
     protected EndPoint getEndPoint(HttpExchange exchange) {
-
         var request = Request.valueOf(exchange.getRequestMethod());
         var query = exchange.getRequestURI().getQuery();
         var isQuery = Objects.nonNull(query);
-
-        boolean isCorrectQuery = isQuery && checkQuery(query);
+        boolean isCorrectQuery = isQuery && checkQuery(exchange, query);
 
         switch (request) {
-
             case GET:
-
                 if (!isQuery) {
                     return EndPoint.GET_ALL;
                 } else if (isCorrectQuery) {
@@ -77,13 +69,9 @@ public abstract class AbstractTaskHandler extends AbstractHandler {
                 } else {
                     return EndPoint.UNKNOWN;
                 }
-
             case POST:
-
                 return EndPoint.POST;
-
             case DELETE:
-
                 if (!isQuery) {
                     return EndPoint.DEL_ALL;
                 } else if (isCorrectQuery) {
@@ -91,45 +79,41 @@ public abstract class AbstractTaskHandler extends AbstractHandler {
                 } else {
                     return EndPoint.UNKNOWN;
                 }
-
             default:
-
                 return EndPoint.UNKNOWN;
         }
     }
 
-    private boolean checkQuery(String query) {
-
+    private boolean checkQuery(HttpExchange exchange, String query) {
         var splitQuery = query.split("=");
         var isCorrectQuerySize = splitQuery.length == 2;
         var tegName = splitQuery[0];
         var isCorrectTeg = tegName.equals("id");
         var stringId = splitQuery[1];
 
-        return isCorrectQuerySize && isCorrectTeg && checkAndSetBufferId(stringId);
-
+        return isCorrectQuerySize && isCorrectTeg && checkAndSetBufferId(exchange, stringId);
     }
 
-    private boolean checkAndSetBufferId(String query) {
-
-        var id = parseLong(query);
-
+    private boolean checkAndSetBufferId(HttpExchange exchange, String query) {
+        Long id = parseLong(query);
         if (id >= 0) {
-            bufferId = id;
+            exchange.setAttribute("id", id);
             return true;
         } else {
             return false;
         }
-
     }
 
     private Long parseLong(String id) {
-
         try {
             return Long.parseLong(id);
         } catch (NumberFormatException e) {
             return -1L;
         }
-
     }
+
+    protected Long getAttributeId(HttpExchange exchange) {
+           return (Long) exchange.getAttribute("id");
+    }
+
 }

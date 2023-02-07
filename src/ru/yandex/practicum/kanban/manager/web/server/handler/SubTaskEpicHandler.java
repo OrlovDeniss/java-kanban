@@ -1,44 +1,44 @@
 package ru.yandex.practicum.kanban.manager.web.server.handler;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import ru.yandex.practicum.kanban.manager.taskmanager.TaskManager;
 
 import java.io.IOException;
 
-public class SubTaskEpicHandler extends EpicHandler implements HttpHandler {
+public class SubTaskEpicHandler extends AbstractTaskHandler {
+
     public SubTaskEpicHandler(TaskManager manager) {
         super(manager);
     }
 
     @Override
-    public void handle(HttpExchange exchange) {
-
-        bufferId = -1L;
-
-        EndPoint endPoint = getEndPoint(exchange);
-
-        try {
-
-            if (endPoint == EndPoint.GET_BY_ID) {
-                getByIdHandler(exchange);
-            } else {
-                unknownHandler(exchange);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            exchange.close();
-        }
-
+    protected void unknownHandler(HttpExchange exchange) throws IOException {
+        exchange.sendResponseHeaders(404, 0);
     }
 
     @Override
-    public void getByIdHandler(HttpExchange exchange) throws IOException, InterruptedException {
+    protected void delByIdHandler(HttpExchange exchange) throws IOException {
+        exchange.sendResponseHeaders(404, 0);
+    }
 
-        sendText(exchange, gson.toJson(manager.getEpic(bufferId).getAllSubTasks()));
+    @Override
+    protected void delAllHandler(HttpExchange exchange) throws IOException {
+        exchange.sendResponseHeaders(404, 0);
+    }
 
+    @Override
+    public void getByIdHandler(HttpExchange exchange) throws IOException {
+        sendText(exchange, toJson(manager.getEpic(getAttributeId(exchange)).getAllSubTasks()));
+    }
+
+    @Override
+    protected void getAllHandler(HttpExchange exchange) throws IOException {
+        exchange.sendResponseHeaders(404, 0);
+    }
+
+    @Override
+    protected void postHandler(HttpExchange exchange) throws IOException {
+        exchange.sendResponseHeaders(404, 0);
     }
 
 }

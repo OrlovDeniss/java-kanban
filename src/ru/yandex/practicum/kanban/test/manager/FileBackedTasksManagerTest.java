@@ -8,7 +8,6 @@ import ru.yandex.practicum.kanban.task.SubTask;
 import ru.yandex.practicum.kanban.task.Task;
 
 import java.io.File;
-import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -20,100 +19,72 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
     private final File file = new File("resources/data.csv");
 
     public FileBackedTasksManagerTest() {
-
         super(new FileBackedTasksManager(new File("resources/data.csv")));
-
         fileBackedTasksManager = new FileBackedTasksManager(file);
-
     }
 
     @Test
-    public void saveAndLoadEmptyFile() throws IOException, InterruptedException {
-
+    public void saveAndLoadEmptyFile() {
         assertEquals(0, fileBackedTasksManager.getAllTasks().size());
         assertEquals(0, fileBackedTasksManager.getAllEpicTasks().size());
         assertEquals(0, fileBackedTasksManager.getAllSubTasks().size());
         assertEquals(0, fileBackedTasksManager.getHistory().size());
-
         fileBackedTasksManager.save();
 
         var newManager = fileBackedTasksManager.loadFromFile(file);
-
         assertEquals(0, newManager.getAllTasks().size());
         assertEquals(0, newManager.getAllEpicTasks().size());
         assertEquals(0, newManager.getAllSubTasks().size());
         assertEquals(0, newManager.getHistory().size());
-
     }
 
     @Test
-    public void saveAndLoadEpicWithoutHistory() throws IOException, InterruptedException {
-
+    public void saveAndLoadEpicWithoutHistory() {
         var testEpic = new Epic();
         testEpic.setTitle("Test tittle");
         testEpic.setDescription("Test description");
         testEpic.setDuration(Duration.ofMinutes(30));
         testEpic.setStartTime(LocalDateTime.of(2023, 1, 1, 0, 0));
-
         fileBackedTasksManager.add(testEpic);
-
         var managerFromFile = fileBackedTasksManager.loadFromFile(file);
-
         assertEquals(1, managerFromFile.getAllEpicTasks().size());
         assertEquals(0, managerFromFile.getAllTasks().size());
         assertEquals(0, managerFromFile.getAllSubTasks().size());
         assertEquals(0, managerFromFile.getHistory().size());
-
         var epicFromFile = managerFromFile.getEpic(testEpic.getId());
-
         assertEquals(testEpic, epicFromFile);
-
     }
 
     @Test
-    public void saveAndLoadEpicWithHistory() throws IOException, InterruptedException {
-
+    public void saveAndLoadEpicWithHistory() {
         var testEpic = new Epic();
-
         fileBackedTasksManager.add(testEpic);
         fileBackedTasksManager.getEpic(testEpic.getId());
-
         var managerFromFile = fileBackedTasksManager.loadFromFile(file);
-
         assertEquals(1, managerFromFile.getAllEpicTasks().size());
         assertEquals(0, managerFromFile.getAllTasks().size());
         assertEquals(0, managerFromFile.getAllSubTasks().size());
         assertEquals(1, managerFromFile.getHistory().size());
-
         var epicFromFile = managerFromFile.getEpic(testEpic.getId());
-
         assertEquals(testEpic, epicFromFile);
-
         var taskFromHistory = managerFromFile.getHistory().get(0);
-
         assertEquals(testEpic, taskFromHistory);
-
     }
 
     @Test
-    public void saveAndLoadTasks() throws IOException, InterruptedException {
-
+    public void saveAndLoadTasks() {
         var task = new Task();
         var task2 = new Task();
-
         fileBackedTasksManager.add(task);
         fileBackedTasksManager.add(task2);
-
         var managerFromFile = fileBackedTasksManager.loadFromFile(file);
-
         assertEquals(task, managerFromFile.getTask(task.getId()));
         assertEquals(task2, managerFromFile.getTask(task2.getId()));
 
     }
 
     @Test
-    public void saveAndLoadEpicWithSubTasks() throws IOException, InterruptedException {
-
+    public void saveAndLoadEpicWithSubTasks() {
         var testEpic = new Epic();
         var subTask1 = new SubTask(testEpic);
         var subTask2 = new SubTask(testEpic);
@@ -132,14 +103,12 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
         fileBackedTasksManager.add(subTask2);
 
         var managerFromFile = fileBackedTasksManager.loadFromFile(file);
-
         assertEquals(testEpic, managerFromFile.getEpic(testEpic.getId()));
         assertEquals(subTask1, managerFromFile.getSubTask(subTask1.getId()));
         assertEquals(subTask2, managerFromFile.getSubTask(subTask2.getId()));
-
         assertEquals(Status.IN_PROGRESS, managerFromFile.getEpic(testEpic.getId()).getStatus());
         assertEquals(Duration.ofMinutes(120), managerFromFile.getEpic(testEpic.getId()).getDuration().get());
         assertEquals(1, managerFromFile.getEpic(testEpic.getId()).getStartTime().get().getDayOfMonth());
-
     }
+
 }

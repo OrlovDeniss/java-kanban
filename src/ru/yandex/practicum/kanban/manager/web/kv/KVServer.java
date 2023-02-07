@@ -18,14 +18,11 @@ public class KVServer {
     private final Map<String, String> data = new HashMap<>();
 
     public KVServer() throws IOException {
-
         apiToken = generateApiToken();
-
         server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
         server.createContext("/register", this::register);
         server.createContext("/save", this::save);
         server.createContext("/load", this::load);
-
     }
 
     private void load(HttpExchange h) throws IOException {

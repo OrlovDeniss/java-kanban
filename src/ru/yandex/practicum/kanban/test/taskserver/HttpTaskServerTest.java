@@ -1,11 +1,12 @@
 package ru.yandex.practicum.kanban.test.taskserver;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.kanban.manager.Managers;
+import ru.yandex.practicum.kanban.gson.adapter.TaskJsonAdapter;
 import ru.yandex.practicum.kanban.manager.taskmanager.TaskManager;
 import ru.yandex.practicum.kanban.manager.web.kv.KVServer;
 import ru.yandex.practicum.kanban.manager.web.server.HttpTaskServer;
@@ -41,37 +42,32 @@ abstract class HttpTaskServerTest<T extends Task> {
     private Type taskType;
 
     HttpTaskServerTest(Class<T> t, Type listType, Type taskType) {
-
         this.t = t;
         this.listType = listType;
         this.taskType = taskType;
-
     }
 
     @BeforeEach
-    void beforeEach() throws IOException, InterruptedException {
-
-        gson = Managers.getGson();
+    void beforeEach() throws IOException {
+        gson = new GsonBuilder()
+                .registerTypeAdapter(Task.class, new TaskJsonAdapter())
+                .registerTypeAdapter(SubTask.class, new TaskJsonAdapter())
+                .registerTypeAdapter(Epic.class, new TaskJsonAdapter())
+                .create();
         kvServer = new KVServer();
         kvServer.start();
         taskServer = new HttpTaskServer();
-
         taskManager = taskServer.getManager();
-
         task = new Task();
         epic = new Epic();
         subTask = new SubTask(epic);
-
         task.setStartTime(LocalDateTime.of(2023, 1, 1, 13, 0));
         task.setDuration(Duration.ofMinutes(60));
-
-        subTask.setStartTime(LocalDateTime.of(2023,1,1,18,0));
+        subTask.setStartTime(LocalDateTime.of(2023, 1, 1, 18, 0));
         subTask.setDuration(Duration.ofMinutes(60));
-
         taskManager.add(task);
         taskManager.add(epic);
         taskManager.add(subTask);
-
         taskManager.getSubTask(subTask.getId());
         taskManager.getEpic(epic.getId());
 
@@ -86,7 +82,6 @@ abstract class HttpTaskServerTest<T extends Task> {
                 referenceTask = subTask;
                 break;
         }
-
     }
 
     @AfterEach
@@ -97,26 +92,19 @@ abstract class HttpTaskServerTest<T extends Task> {
 
     @Test
     public void getAllTasks() throws IOException, InterruptedException {
-
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/" + t.getSimpleName().toLowerCase());
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
         assertEquals(200, response.statusCode());
-
         List<T> tasks = gson.fromJson(response.body(), listType);
-
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
-
         assertEquals(referenceTask, tasks.get(0));
-
     }
 
     @Test
     public void getTaskById() throws IOException, InterruptedException {
-
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/" + t.getSimpleName().toLowerCase() + "/?id=" + referenceTask.getId());
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
@@ -125,24 +113,19 @@ abstract class HttpTaskServerTest<T extends Task> {
         assertEquals(200, response.statusCode());
 
         T taskById = gson.fromJson(response.body(), taskType);
-
         assertNotNull(taskById);
         assertEquals(referenceTask, taskById);
-
     }
 
     @Test
     public void postTask() throws IOException, InterruptedException {
-
         var json = gson.toJson(referenceTask);
-
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/task/");
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(HttpRequest.BodyPublishers.ofString(json)).build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(200, response.statusCode());
-
 
         url = URI.create("http://localhost:8080/tasks/" + t.getSimpleName().toLowerCase() + "/?id=" + referenceTask.getId());
         request = HttpRequest.newBuilder().uri(url).GET().build();
@@ -151,15 +134,12 @@ abstract class HttpTaskServerTest<T extends Task> {
         assertEquals(200, response.statusCode());
 
         T taskFromServer = gson.fromJson(response.body(), taskType);
-
         assertNotNull(taskFromServer);
         assertEquals(referenceTask, taskFromServer);
-
     }
 
     @Test
     public void deleteTaskById() throws IOException, InterruptedException {
-
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/" + t.getSimpleName().toLowerCase() + "/?id=" + referenceTask.getId());
         HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
@@ -174,15 +154,12 @@ abstract class HttpTaskServerTest<T extends Task> {
         assertEquals(200, response.statusCode());
 
         List<T> tasks = gson.fromJson(response.body(), listType);
-
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
-
     }
 
     @Test
     public void deleteAll() throws IOException, InterruptedException {
-
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/" + t.getSimpleName().toLowerCase());
         HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
@@ -197,15 +174,12 @@ abstract class HttpTaskServerTest<T extends Task> {
         assertEquals(200, response.statusCode());
 
         List<T> tasks = gson.fromJson(response.body(), listType);
-
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
-
     }
 
     @Test
     public void getEpicSubTasks() throws IOException, InterruptedException {
-
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/subtask/epic/?id=" + epic.getId());
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
@@ -217,17 +191,13 @@ abstract class HttpTaskServerTest<T extends Task> {
         }.getType();
 
         List<SubTask> tasksFromServer = gson.fromJson(response.body(), lstType);
-
         assertNotNull(tasksFromServer);
         assertEquals(1, tasksFromServer.size());
-
         assertEquals(subTask, tasksFromServer.get(0));
-
     }
 
     @Test
     public void getHistory() throws IOException, InterruptedException {
-
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/history");
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
@@ -235,21 +205,16 @@ abstract class HttpTaskServerTest<T extends Task> {
 
         assertEquals(200, response.statusCode());
 
-        Type lstType = new TypeToken<List<Task>>() {
-        }.getType();
-
+        Type lstType = new TypeToken<List<Task>>() {}.getType();
         List<Task> tasksFromServer = gson.fromJson(response.body(), lstType);
-
         assertNotNull(tasksFromServer);
         assertEquals(2, tasksFromServer.size());
         assertEquals(subTask, tasksFromServer.get(0));
         assertEquals(epic, tasksFromServer.get(1));
-
     }
 
     @Test
     public void getPrioritizedTasks() throws IOException, InterruptedException {
-
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks");
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
@@ -257,16 +222,12 @@ abstract class HttpTaskServerTest<T extends Task> {
 
         assertEquals(200, response.statusCode());
 
-        Type lstType = new TypeToken<List<Task>>() {
-        }.getType();
-
+        Type lstType = new TypeToken<List<Task>>() {}.getType();
         List<Task> tasksFromServer = gson.fromJson(response.body(), lstType);
-
         assertNotNull(tasksFromServer);
         assertEquals(2, tasksFromServer.size());
         assertEquals(task, tasksFromServer.get(0));
         assertEquals(subTask, tasksFromServer.get(1));
-
     }
 
 }

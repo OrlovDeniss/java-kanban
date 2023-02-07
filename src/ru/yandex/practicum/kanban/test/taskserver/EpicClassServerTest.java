@@ -8,8 +8,6 @@ import java.util.List;
 public class EpicClassServerTest extends HttpTaskServerTest<Epic> {
 
     EpicClassServerTest() {
-        super(Epic.class, new TypeToken<List<Epic>>() {
-        }.getType(), new TypeToken<Epic>() {
-        }.getType());
+        super(Epic.class, new TypeToken<List<Epic>>() {}.getType(), new TypeToken<Epic>() {}.getType());
     }
 }
