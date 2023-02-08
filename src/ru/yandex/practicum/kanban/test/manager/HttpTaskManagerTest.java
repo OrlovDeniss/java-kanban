@@ -1,7 +1,6 @@
 package ru.yandex.practicum.kanban.test.manager;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import ru.yandex.practicum.kanban.manager.taskmanager.HttpTaskManager;
 import ru.yandex.practicum.kanban.manager.web.kv.KVServer;
 import ru.yandex.practicum.kanban.task.Epic;
@@ -16,10 +15,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
 
-    static KVServer kvServer;
-    HttpTaskManager manager;
+    private static KVServer kvServer;
+    private HttpTaskManager manager;
 
-    HttpTaskManagerTest() {
+    HttpTaskManagerTest() throws IOException {
         super(new HttpTaskManager("http://localhost:8078"));
         manager = new HttpTaskManager("http://localhost:8078");
     }
@@ -30,8 +29,13 @@ public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
         kvServer.start();
     }
 
+    @AfterAll
+    public static void afterAll() {
+        kvServer.stop();
+    }
+
     @Test
-    public void saveAndLoadWhenEmpty() {
+    public void saveAndLoadWhenEmpty() throws IOException {
         assertEquals(0, manager.getAllTasks().size());
         assertEquals(0, manager.getAllEpicTasks().size());
         assertEquals(0, manager.getAllSubTasks().size());
@@ -46,7 +50,7 @@ public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
     }
 
     @Test
-    public void saveAndLoadTasksAndHistory() {
+    public void saveAndLoadTasksAndHistory() throws IOException {
         var task = new Task();
         var epic = new Epic();
         var subTask = new SubTask(epic);

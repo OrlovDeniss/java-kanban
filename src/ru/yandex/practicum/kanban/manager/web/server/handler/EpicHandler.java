@@ -1,5 +1,6 @@
 package ru.yandex.practicum.kanban.manager.web.server.handler;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import ru.yandex.practicum.kanban.manager.taskmanager.TaskManager;
@@ -11,53 +12,58 @@ import java.util.Optional;
 
 public class EpicHandler extends AbstractTaskHandler {
 
-    public EpicHandler(TaskManager manager) {
-        super(manager);
+    public EpicHandler(TaskManager manager, Gson gson) {
+        super(manager, gson);
     }
 
     @Override
-    protected void unknownHandler(HttpExchange exchange) throws IOException {
-        exchange.sendResponseHeaders(404, 0);
+    protected void deleteById(HttpExchange exchange) throws IOException {
+        var task = findEpicById(getAttributeId(exchange));
+        if (task.isPresent()) {
+            manager.removeEpic(task.get().getId());
+            responseOk(exchange);
+        } else {
+            responseNotFound(exchange);
+        }
     }
 
     @Override
-    protected void delByIdHandler(HttpExchange exchange) throws IOException {
-        manager.removeEpic(getAttributeId(exchange));
-        exchange.sendResponseHeaders(200, 0);
-    }
-
-    @Override
-    protected void delAllHandler(HttpExchange exchange) throws IOException {
+    protected void deleteAll(HttpExchange exchange) throws IOException {
         manager.clearEpicTasks();
-        exchange.sendResponseHeaders(200, 0);
+        responseOk(exchange);
     }
 
     @Override
-    protected void getByIdHandler(HttpExchange exchange) throws IOException{
-        sendText(exchange, toJson(manager.getEpic(getAttributeId(exchange))));
+    protected void getById(HttpExchange exchange) throws IOException {
+        var task = findEpicById(getAttributeId(exchange));
+        if (task.isPresent()) {
+            sendObjectAsJson(exchange, task.get());
+        } else {
+            responseNotFound(exchange);
+        }
     }
 
     @Override
-    protected void getAllHandler(HttpExchange exchange) throws IOException {
-        sendText(exchange, toJson(manager.getAllEpicTasks()));
+    protected void getAllByType(HttpExchange exchange) throws IOException {
+        sendObjectAsJson(exchange, manager.getAllEpicTasks());
     }
 
     @Override
-    protected void postHandler(HttpExchange exchange) throws IOException {
+    protected void post(HttpExchange exchange) throws IOException {
         var inputStream = exchange.getRequestBody();
         var body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
         Optional<Task> task;
         try {
-            task = Optional.of(gson.fromJson(body, Epic.class));
+            task = Optional.ofNullable(gson.fromJson(body, Epic.class));
             if (task.isEmpty()) {
-                exchange.sendResponseHeaders(404, 0);
+                responseNotFound(exchange);
             } else {
                 manager.add(task.get());
-                exchange.sendResponseHeaders(200, 0);
+                responseOk(exchange);
             }
         } catch (JsonSyntaxException e) {
             e.printStackTrace();
-            exchange.sendResponseHeaders(404, 0);
+            responseNotFound(exchange);
         }
     }
 

@@ -1,15 +1,20 @@
 package ru.yandex.practicum.kanban.manager.web.server.handler;
 
+import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import ru.yandex.practicum.kanban.manager.taskmanager.TaskManager;
+import ru.yandex.practicum.kanban.task.Epic;
+import ru.yandex.practicum.kanban.task.SubTask;
+import ru.yandex.practicum.kanban.task.Task;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 
 public abstract class AbstractTaskHandler extends AbstractHandler {
 
-    AbstractTaskHandler(TaskManager manager) {
-        super(manager);
+    AbstractTaskHandler(TaskManager manager, Gson gson) {
+        super(manager, gson);
     }
 
     @Override
@@ -18,47 +23,59 @@ public abstract class AbstractTaskHandler extends AbstractHandler {
         try {
             switch (endPoint) {
                 case GET_ALL:
-                    getAllHandler(exchange);
+                    getAllByType(exchange);
                     break;
                 case GET_BY_ID:
-                    getByIdHandler(exchange);
+                    getById(exchange);
                     break;
                 case POST:
-                    postHandler(exchange);
+                    post(exchange);
                     break;
                 case DEL_ALL:
-                    delAllHandler(exchange);
+                    deleteAll(exchange);
                     break;
                 case DEL_BY_ID:
-                    delByIdHandler(exchange);
+                    deleteById(exchange);
                     break;
                 default:
-                    unknownHandler(exchange);
+                    unknown(exchange);
             }
-        } catch (IOException  e) {
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
             exchange.close();
         }
     }
 
-    protected abstract void unknownHandler(HttpExchange exchange) throws IOException;
+    protected void unknown(HttpExchange exchange) throws IOException {
+        responseNotFound(exchange);
+    }
 
-    protected abstract void delByIdHandler(HttpExchange exchange) throws IOException;
+    protected void deleteById(HttpExchange exchange) throws IOException {
+        responseNotFound(exchange);
+    }
 
-    protected abstract void delAllHandler(HttpExchange exchange) throws IOException;
+    protected void deleteAll(HttpExchange exchange) throws IOException {
+        responseNotFound(exchange);
+    }
 
-    protected abstract void getByIdHandler(HttpExchange exchange) throws IOException;
+    protected void getById(HttpExchange exchange) throws IOException {
+        responseNotFound(exchange);
+    }
 
-    protected abstract void getAllHandler(HttpExchange exchange) throws IOException;
+    protected void getAllByType(HttpExchange exchange) throws IOException {
+        responseNotFound(exchange);
+    }
 
-    protected abstract void postHandler(HttpExchange exchange) throws IOException;
+    protected void post(HttpExchange exchange) throws IOException {
+        responseNotFound(exchange);
+    }
 
     protected EndPoint getEndPoint(HttpExchange exchange) {
         var request = Request.valueOf(exchange.getRequestMethod());
         var query = exchange.getRequestURI().getQuery();
         var isQuery = Objects.nonNull(query);
-        boolean isCorrectQuery = isQuery && checkQuery(exchange, query);
+        var isCorrectQuery = isQuery && checkQuery(exchange, query);
 
         switch (request) {
             case GET:
@@ -91,10 +108,10 @@ public abstract class AbstractTaskHandler extends AbstractHandler {
         var isCorrectTeg = tegName.equals("id");
         var stringId = splitQuery[1];
 
-        return isCorrectQuerySize && isCorrectTeg && checkAndSetBufferId(exchange, stringId);
+        return isCorrectQuerySize && isCorrectTeg && checkAndSetAttributeId(exchange, stringId);
     }
 
-    private boolean checkAndSetBufferId(HttpExchange exchange, String query) {
+    private boolean checkAndSetAttributeId(HttpExchange exchange, String query) {
         Long id = parseLong(query);
         if (id >= 0) {
             exchange.setAttribute("id", id);
@@ -113,7 +130,24 @@ public abstract class AbstractTaskHandler extends AbstractHandler {
     }
 
     protected Long getAttributeId(HttpExchange exchange) {
-           return (Long) exchange.getAttribute("id");
+        return (Long) exchange.getAttribute("id");
     }
 
+    protected Optional<Task> findTaskById(Long id) {
+        return manager.getAllTasks().stream()
+                .filter(t -> Objects.equals(t.getId(), id))
+                .findFirst();
+    }
+
+    protected Optional<SubTask> findSubTaskById(Long id) {
+        return manager.getAllSubTasks().stream()
+                .filter(t -> Objects.equals(t.getId(), id))
+                .findFirst();
+    }
+
+    protected Optional<Epic> findEpicById(Long id) {
+        return manager.getAllEpicTasks().stream()
+                .filter(t -> Objects.equals(t.getId(), id))
+                .findFirst();
+    }
 }
